@@ -1,99 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import * as styles from './shop.module.css';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
 
-import Banner from '../components/Banner';
-import Breadcrumbs from '../components/Breadcrumbs';
-import CardController from '../components/CardController';
-import Container from '../components/Container';
-import Chip from '../components/Chip';
-import Icon from '../components/Icons/Icon';
-import Layout from '../components/Layout';
-import LayoutOption from '../components/LayoutOption';
-import ProductCardGrid from '../components/ProductCardGrid';
-import { generateMockProductData } from '../helpers/mock';
-import Button from '../components/Button';
-import Config from '../config.json';
-
-const ShopPage = (props) => {
-  const [showFilter, setShowFilter] = useState(false);
-  const data = generateMockProductData(6, 'woman');
+const Shop = () => {
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    window.addEventListener('keydown', escapeHandler);
-    return () => window.removeEventListener('keydown', escapeHandler);
+    const fetchProducts = async () => {
+      const { data, error } = await supabase.from('products').select('*').eq('is_active', true);
+      if (error) console.error('Error loading products:', error);
+      else setProducts(data);
+    };
+
+    fetchProducts();
   }, []);
 
-  const escapeHandler = (e) => {
-    if (e?.keyCode === undefined) return;
-    if (e.keyCode === 27) setShowFilter(false);
-  };
-
   return (
-    <Layout>
-      <div className={styles.root}>
-        <Container size={'large'} spacing={'min'}>
-          <div className={styles.breadcrumbContainer}>
-            <Breadcrumbs
-              crumbs={[
-                { link: '/', label: 'Home' },
-                { link: '/', label: 'Woman' },
-                { label: 'Sweaters' },
-              ]}
-            />
+    <div style={{ padding: '2rem' }}>
+      <h1>Swagyo Shop</h1>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '2rem' }}>
+        {products.map((p) => (
+          <div key={p.id} style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '8px' }}>
+            <img src={p.image_url} alt={p.name} width="100%" />
+            <h3>{p.name}</h3>
+            <p>₹{p.price}</p>
+            <p>{p.description}</p>
+            <button>Add to Cart</button>
           </div>
-        </Container>
-        <Banner
-          maxWidth={'650px'}
-          name={`Woman's Sweaters`}
-          subtitle={
-            'Look to our women’s sweaters for modern takes on one-and-done dressing. From midis in bold prints to dramatic floor-sweeping styles and easy all-in-ones, our edit covers every mood.'
-          }
-        />
-        <Container size={'large'} spacing={'min'}>
-          <div className={styles.metaContainer}>
-            <span className={styles.itemCount}>476 items</span>
-            <div className={styles.controllerContainer}>
-              <div
-                className={styles.iconContainer}
-                role={'presentation'}
-                onClick={() => setShowFilter(!showFilter)}
-              >
-                <Icon symbol={'filter'} />
-                <span>Filters</span>
-              </div>
-              <div
-                className={`${styles.iconContainer} ${styles.sortContainer}`}
-              >
-                <span>Sort by</span>
-                <Icon symbol={'caret'} />
-              </div>
-            </div>
-          </div>
-          <CardController
-            closeFilter={() => setShowFilter(false)}
-            visible={showFilter}
-            filters={Config.filters}
-          />
-          <div className={styles.chipsContainer}>
-            <Chip name={'XS'} />
-            <Chip name={'S'} />
-          </div>
-          <div className={styles.productContainer}>
-            <span className={styles.mobileItemCount}>476 items</span>
-            <ProductCardGrid data={data}></ProductCardGrid>
-          </div>
-          <div className={styles.loadMoreContainer}>
-            <span>6 of 456</span>
-            <Button fullWidth level={'secondary'}>
-              LOAD MORE
-            </Button>
-          </div>
-        </Container>
+        ))}
       </div>
-
-      <LayoutOption />
-    </Layout>
+    </div>
   );
 };
 
-export default ShopPage;
+export default Shop;
