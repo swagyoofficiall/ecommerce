@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as styles from './shopV2.module.css';
 
 import Accordion from '../components/Accordion';
@@ -12,13 +12,25 @@ import ProductCardGrid from '../components/ProductCardGrid';
 import Button from '../components/Button';
 
 import Config from '../config.json';
-import { generateMockProductData } from '../helpers/mock';
+import { supabase } from '../lib/supabase'; // ✅ Supabase client
 
-const ShopV2Page = (props) => {
-  const data = generateMockProductData(9, 'woman');
+const ShopV2Page = () => {
   const filters = Config.filters;
-
   const [filterState, setFilterState] = useState(filters);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase.from('products').select('*');
+      if (error) {
+        console.error('Error fetching products:', error);
+      } else {
+        setProducts(data);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const filterTick = (e, categoryIndex, labelIndex) => {
     const filterStateCopy = [...filterState];
@@ -31,15 +43,13 @@ const ShopV2Page = (props) => {
       <div className={styles.root}>
         <Container size={'large'} spacing={'min'}>
           <Breadcrumbs
-            crumbs={[{ link: '/', label: 'Home' }, { label: 'Woman' }]}
+            crumbs={[{ link: '/', label: 'Home' }, { label: 'Shop' }]}
           />
         </Container>
         <Banner
           maxWidth={'650px'}
-          name={`Woman`}
-          subtitle={
-            'Look to our women’s sweaters for modern takes on one-and-done dressing. From midis in bold prints to dramatic floor-sweeping styles and easy all-in-ones, our edit covers every mood.'
-          }
+          name={`Swagyo Products`}
+          subtitle={`Browse our exclusive collection of high-quality items.`}
         />
         <Container size={'large'} spacing={'min'}>
           <div className={styles.content}>
@@ -71,13 +81,17 @@ const ShopV2Page = (props) => {
             </div>
             <div>
               <div className={styles.metaContainer}>
-                <span className={`standardSpan`}>476 items</span>
+                <span className={`standardSpan`}>{products.length} items</span>
               </div>
-              <ProductCardGrid height={'440px'} data={data}></ProductCardGrid>
+              {products.length === 0 ? (
+                <p style={{ padding: '2rem', textAlign: 'center' }}>No products found.</p>
+              ) : (
+                <ProductCardGrid height={'440px'} data={products} />
+              )}
             </div>
           </div>
           <div className={styles.loadMoreContainer}>
-            <span>6 of 456</span>
+            <span>{products.length} of {products.length}</span>
             <Button fullWidth level={'secondary'}>
               LOAD MORE
             </Button>
