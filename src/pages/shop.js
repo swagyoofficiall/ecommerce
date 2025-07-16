@@ -1,23 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import * as styles from './shop.module.css';
+import React, { useState, useEffect } from 'react';
+import * as styles from './shopV2.module.css'; // ✅ use V2 design
 
+import Accordion from '../components/Accordion';
 import Banner from '../components/Banner';
 import Breadcrumbs from '../components/Breadcrumbs';
-import CardController from '../components/CardController';
+import Checkbox from '../components/Checkbox';
 import Container from '../components/Container';
-import Chip from '../components/Chip';
-import Icon from '../components/Icons/Icon';
-import Layout from '../components/Layout';
+import Layout from '../components/Layout/Layout';
 import LayoutOption from '../components/LayoutOption';
 import ProductCardGrid from '../components/ProductCardGrid';
 import Button from '../components/Button';
-import Config from '../config.json';
 
+import Config from '../config.json';
 import { supabase } from '../lib/supabase'; // ✅ Supabase client
 
 const ShopPage = () => {
-  const [showFilter, setShowFilter] = useState(false);
   const [products, setProducts] = useState([]);
+  const [filterState, setFilterState] = useState(Config.filters);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -29,81 +28,67 @@ const ShopPage = () => {
       }
     };
     fetchProducts();
-
-    window.addEventListener('keydown', escapeHandler);
-    return () => window.removeEventListener('keydown', escapeHandler);
   }, []);
 
-  const escapeHandler = (e) => {
-    if (e?.keyCode === undefined) return;
-    if (e.keyCode === 27) setShowFilter(false);
+  const filterTick = (e, categoryIndex, labelIndex) => {
+    const copy = [...filterState];
+    copy[categoryIndex].items[labelIndex].value = !e.target.value;
+    setFilterState(copy);
   };
 
   return (
     <Layout>
       <div className={styles.root}>
         <Container size={'large'} spacing={'min'}>
-          <div className={styles.breadcrumbContainer}>
-            <Breadcrumbs
-              crumbs={[
-                { link: '/', label: 'Home' },
-                { label: 'Shop' },
-              ]}
-            />
-          </div>
+          <Breadcrumbs crumbs={[{ link: '/', label: 'Home' }, { label: 'Shop' }]} />
         </Container>
         <Banner
           maxWidth={'650px'}
-          name={`Swagyo Products`}
-          subtitle={`Browse our exclusive collection of high-quality items.`}
+          name={`Swagyo Store`}
+          subtitle={`Browse our exclusive premium collection.`}
         />
         <Container size={'large'} spacing={'min'}>
-          <div className={styles.metaContainer}>
-            <span className={styles.itemCount}>{products.length} items</span>
-            <div className={styles.controllerContainer}>
-              <div
-                className={styles.iconContainer}
-                role={'presentation'}
-                onClick={() => setShowFilter(!showFilter)}
-              >
-                <Icon symbol={'filter'} />
-                <span>Filters</span>
-              </div>
-              <div className={`${styles.iconContainer} ${styles.sortContainer}`}>
-                <span>Sort by</span>
-                <Icon symbol={'caret'} />
-              </div>
+          <div className={styles.content}>
+            <div className={styles.filterContainer}>
+              {filterState.map((category, categoryIndex) => (
+                <div key={categoryIndex}>
+                  <Accordion customStyle={styles} title={category.category}>
+                    {category.items.map((item, itemIndex) => (
+                      <div key={itemIndex} className={styles.filters}>
+                        <Checkbox
+                          size={'sm'}
+                          action={(e) => filterTick(e, categoryIndex, itemIndex)}
+                          label={item.name}
+                          value={item.value}
+                          id={item.name}
+                          name={item.name}
+                        />
+                      </div>
+                    ))}
+                  </Accordion>
+                </div>
+              ))}
             </div>
-          </div>
-          <CardController
-            closeFilter={() => setShowFilter(false)}
-            visible={showFilter}
-            filters={Config.filters}
-          />
-          <div className={styles.chipsContainer}>
-            <Chip name={'XS'} />
-            <Chip name={'S'} />
-          </div>
-          <div className={styles.productContainer}>
-            {products.length === 0 ? (
-              <p style={{ padding: '2rem', textAlign: 'center' }}>No products found.</p>
-            ) : (
-              <ProductCardGrid data={products} />
-            )}
+            <div>
+              <div className={styles.metaContainer}>
+                <span className={`standardSpan`}>{products.length} items</span>
+              </div>
+              {products.length === 0 ? (
+                <p style={{ padding: '2rem', textAlign: 'center' }}>No products found.</p>
+              ) : (
+                <ProductCardGrid height={'440px'} data={products} />
+              )}
+            </div>
           </div>
           <div className={styles.loadMoreContainer}>
             <span>{products.length} of {products.length}</span>
-            <Button fullWidth level={'secondary'}>
-              LOAD MORE
-            </Button>
+            <Button fullWidth level={'secondary'}>LOAD MORE</Button>
           </div>
         </Container>
       </div>
-
       <LayoutOption />
     </Layout>
   );
 };
 
 export default ShopPage;
-checisk t
