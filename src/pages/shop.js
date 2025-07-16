@@ -1,16 +1,27 @@
-import * as React from 'react';
-import { useEffect, useState } from 'react';
-
-import Layout from '../components/Layout/Layout';
-import Container from '../components/Container';
-import Title from '../components/Title';
-
-import { supabase } from '../lib/supabase';
+import React, { useState, useEffect } from 'react';
 import * as styles from './shop.module.css';
 
-const ShopPage = () => {
+import Banner from '../components/Banner';
+import Breadcrumbs from '../components/Breadcrumbs';
+import CardController from '../components/CardController';
+import Container from '../components/Container';
+import Chip from '../components/Chip';
+import Icon from '../components/Icons/Icon';
+import Layout from '../components/Layout';
+import LayoutOption from '../components/LayoutOption';
+import ProductCardGrid from '../components/ProductCardGrid';
+import Button from '../components/Button';
+import Config from '../config.json';
+import { supabase } from '../lib/supabase';
+
+const ShopPage = (props) => {
+  const [showFilter, setShowFilter] = useState(false);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    window.addEventListener('keydown', escapeHandler);
+    return () => window.removeEventListener('keydown', escapeHandler);
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -20,57 +31,79 @@ const ShopPage = () => {
       } else {
         setProducts(data);
       }
-      setLoading(false);
     };
     fetchProducts();
   }, []);
 
+  const escapeHandler = (e) => {
+    if (e?.keyCode === undefined) return;
+    if (e.keyCode === 27) setShowFilter(false);
+  };
+
   return (
     <Layout>
-      <Container size="large">
-        <Title name="Shop All Products" />
-        {loading ? (
-          <p>Loading products...</p>
-        ) : products.length === 0 ? (
-          <p>No products found.</p>
-        ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '2rem',
-            }}
-          >
-            {products.map((product) => (
-              <div
-                key={product.id}
-                style={{
-                  border: '1px solid #ccc',
-                  borderRadius: '12px',
-                  padding: '1rem',
-                  background: '#fff',
-                  boxShadow: '0 0 10px rgba(0,0,0,0.05)',
-                }}
-              >
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  style={{
-                    width: '100%',
-                    height: '200px',
-                    objectFit: 'cover',
-                    borderRadius: '8px',
-                  }}
-                />
-                <h3 style={{ marginTop: '1rem' }}>{product.name}</h3>
-                <p style={{ color: '#333', fontWeight: 'bold' }}>
-                  ₹{product.price}
-                </p>
-              </div>
-            ))}
+      <div className={styles.root}>
+        <Container size={'large'} spacing={'min'}>
+          <div className={styles.breadcrumbContainer}>
+            <Breadcrumbs
+              crumbs={[
+                { link: '/', label: 'Home' },
+                { link: '/', label: 'Woman' },
+                { label: 'Sweaters' },
+              ]}
+            />
           </div>
-        )}
-      </Container>
+        </Container>
+        <Banner
+          maxWidth={'650px'}
+          name={`Woman's Sweaters`}
+          subtitle={
+            'Look to our women’s sweaters for modern takes on one-and-done dressing. From midis in bold prints to dramatic floor-sweeping styles and easy all-in-ones, our edit covers every mood.'
+          }
+        />
+        <Container size={'large'} spacing={'min'}>
+          <div className={styles.metaContainer}>
+            <span className={styles.itemCount}>{products.length} items</span>
+            <div className={styles.controllerContainer}>
+              <div
+                className={styles.iconContainer}
+                role={'presentation'}
+                onClick={() => setShowFilter(!showFilter)}
+              >
+                <Icon symbol={'filter'} />
+                <span>Filters</span>
+              </div>
+              <div
+                className={`${styles.iconContainer} ${styles.sortContainer}`}
+              >
+                <span>Sort by</span>
+                <Icon symbol={'caret'} />
+              </div>
+            </div>
+          </div>
+          <CardController
+            closeFilter={() => setShowFilter(false)}
+            visible={showFilter}
+            filters={Config.filters}
+          />
+          <div className={styles.chipsContainer}>
+            <Chip name={'XS'} />
+            <Chip name={'S'} />
+          </div>
+          <div className={styles.productContainer}>
+            <span className={styles.mobileItemCount}>{products.length} items</span>
+            <ProductCardGrid data={products}></ProductCardGrid>
+          </div>
+          <div className={styles.loadMoreContainer}>
+            <span>{products.length} items loaded</span>
+            <Button fullWidth level={'secondary'}>
+              LOAD MORE
+            </Button>
+          </div>
+        </Container>
+      </div>
+
+      <LayoutOption />
     </Layout>
   );
 };
