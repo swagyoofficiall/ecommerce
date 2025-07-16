@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 
 import AttributeGrid from '../components/AttributeGrid';
 import Container from '../components/Container';
@@ -11,15 +12,28 @@ import ProductCardGrid from '../components/ProductCardGrid';
 import Quote from '../components/Quote';
 import Title from '../components/Title';
 
-import { generateMockBlogData, generateMockProductData } from '../helpers/mock';
-
+import { generateMockBlogData } from '../helpers/mock';
 import * as styles from './index.module.css';
 import { Link, navigate } from 'gatsby';
 import { toOptimizedImage } from '../helpers/general';
 
+import { supabase } from '../lib/supabase'; // ✅ Supabase client
+
 const IndexPage = () => {
-  const newArrivals = generateMockProductData(3, 'shirt');
   const blogData = generateMockBlogData(3);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase.from('products').select('*');
+      if (error) {
+        console.error('Error fetching products:', error);
+      } else {
+        setProducts(data);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const goToShop = () => {
     navigate('/shop');
@@ -57,17 +71,23 @@ const IndexPage = () => {
         </Container>
       </div>
 
-      {/* New Arrivals */}
+      {/* New Arrivals from Supabase */}
       <div className={styles.newArrivalsContainer}>
         <Container>
           <Title name={'New Arrivals'} link={'/shop'} textLink={'view all'} />
-          <ProductCardGrid
-            spacing={true}
-            showSlider
-            height={480}
-            columns={3}
-            data={newArrivals}
-          />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem' }}>
+            {products.map((product) => (
+              <div key={product.id} style={{ border: '1px solid #ddd', borderRadius: '10px', padding: '1rem', background: '#fefefe' }}>
+                <img
+                  src={product.image_url}
+                  alt={product.name}
+                  style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }}
+                />
+                <h3>{product.name}</h3>
+                <p>₹{product.price}</p>
+              </div>
+            ))}
+          </div>
         </Container>
       </div>
 
