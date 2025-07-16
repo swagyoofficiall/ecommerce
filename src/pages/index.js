@@ -8,7 +8,6 @@ import BlogPreviewGrid from '../components/BlogPreviewGrid';
 import Highlight from '../components/Highlight';
 import Layout from '../components/Layout/Layout';
 import ProductCollectionGrid from '../components/ProductCollectionGrid';
-import ProductCardGrid from '../components/ProductCardGrid';
 import Quote from '../components/Quote';
 import Title from '../components/Title';
 
@@ -17,7 +16,7 @@ import * as styles from './index.module.css';
 import { Link, navigate } from 'gatsby';
 import { toOptimizedImage } from '../helpers/general';
 
-import { supabase } from '../lib/supabase'; // ✅ Supabase client
+import { supabase } from '../lib/supabase'; // ✅ Your Supabase client
 
 const IndexPage = () => {
   const blogData = generateMockBlogData(3);
@@ -41,7 +40,7 @@ const IndexPage = () => {
 
   return (
     <Layout disablePaddingBottom>
-      {/* Hero Container */}
+      {/* Hero Section */}
       <Hero
         maxWidth={'500px'}
         image={'/banner1.png'}
@@ -51,19 +50,19 @@ const IndexPage = () => {
         ctaAction={goToShop}
       />
 
-      {/* Message Container */}
+      {/* Welcome Message */}
       <div className={styles.messageContainer}>
         <p>
-          This is a demonstration of the Sydney theme for verse by{' '}
-          <span className={styles.gold}>matter design.</span>
+          Welcome to <span className={styles.gold}>Swagyo</span> — your luxury
+          fashion destination.
         </p>
         <p>
-          wear by <span className={styles.gold}>sunspel</span> and{' '}
-          <span className={styles.gold}>scotch&soda</span>
+          Powered by <span className={styles.gold}>Supabase</span> &{' '}
+          <span className={styles.gold}>Netlify</span>
         </p>
       </div>
 
-      {/* Collection Container */}
+      {/* Product Collection */}
       <div className={styles.collectionContainer}>
         <Container size={'large'}>
           <Title name={'New Collection'} />
@@ -75,23 +74,45 @@ const IndexPage = () => {
       <div className={styles.newArrivalsContainer}>
         <Container>
           <Title name={'New Arrivals'} link={'/shop'} textLink={'view all'} />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '2rem',
+            }}
+          >
             {products.map((product) => (
-              <div key={product.id} style={{ border: '1px solid #ddd', borderRadius: '10px', padding: '1rem', background: '#fefefe' }}>
+              <div
+                key={product.id}
+                style={{
+                  border: '1px solid #ccc',
+                  borderRadius: '12px',
+                  padding: '1rem',
+                  background: '#fff',
+                  boxShadow: '0 0 10px rgba(0,0,0,0.05)',
+                }}
+              >
                 <img
                   src={product.image_url}
                   alt={product.name}
-                  style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }}
+                  style={{
+                    width: '100%',
+                    height: '200px',
+                    objectFit: 'cover',
+                    borderRadius: '8px',
+                  }}
                 />
-                <h3>{product.name}</h3>
-                <p>₹{product.price}</p>
+                <h3 style={{ marginTop: '1rem' }}>{product.name}</h3>
+                <p style={{ color: '#333', fontWeight: 'bold' }}>
+                  ₹{product.price}
+                </p>
               </div>
             ))}
           </div>
         </Container>
       </div>
 
-      {/* Highlight  */}
+      {/* Highlight Section */}
       <div className={styles.highlightContainer}>
         <Container size={'large'} fullMobile>
           <Highlight
@@ -100,7 +121,7 @@ const IndexPage = () => {
             miniImage={'/highlightmin.png'}
             miniImageAlt={'mini highlight image'}
             title={'Luxury Knitwear'}
-            description={`This soft lambswool jumper is knitted in Scotland, using yarn from one of the world's oldest spinners based in Fife`}
+            description={`This soft lambswool jumper is knitted in Scotland, using yarn from one of the world's oldest spinners based in Fife.`}
             textLink={'shop now'}
             link={'/shop'}
           />
@@ -109,23 +130,26 @@ const IndexPage = () => {
 
       {/* Promotion */}
       <div className={styles.promotionContainer}>
-        <Hero image={toOptimizedImage('/banner2.png')} title={`-50% off \n All Essentials`} />
+        <Hero
+          image={toOptimizedImage('/banner2.png')}
+          title={`-50% off \n All Essentials`}
+        />
         <div className={styles.linkContainers}>
           <Link to={'/shop'}>WOMAN</Link>
           <Link to={'/shop'}>MAN</Link>
         </div>
       </div>
 
-      {/* Quote */}
+      {/* Quote Section */}
       <Quote
         bgColor={'var(--standard-light-grey)'}
-        title={'about Sydney'}
+        title={'Our Belief'}
         quote={
-          '“We believe in two things: the pursuit of quality in everything we do, and looking after one another. Everything else should take care of itself.”'
+          '“We believe in two things: the pursuit of quality in everything we do, and looking after one another.”'
         }
       />
 
-      {/* Blog Grid */}
+      {/* Blogs */}
       <div className={styles.blogsContainer}>
         <Container size={'large'}>
           <Title name={'Journal'} subtitle={'Notes on life and style'} />
@@ -133,7 +157,7 @@ const IndexPage = () => {
         </Container>
       </div>
 
-      {/* Promotion */}
+      {/* Sustainability Banner */}
       <div className={styles.sustainableContainer}>
         <Hero
           image={toOptimizedImage('/banner3.png')}
@@ -147,11 +171,11 @@ const IndexPage = () => {
         />
       </div>
 
-      {/* Social Media */}
+      {/* Social Feed */}
       <div className={styles.socialContainer}>
         <Title
           name={'Styled by You'}
-          subtitle={'Tag @sydney to be featured.'}
+          subtitle={'Tag @swagyo to be featured.'}
         />
         <div className={styles.socialContentGrid}>
           <img src={toOptimizedImage(`/social/socialMedia1.png`)} alt={'social media 1'} />
@@ -160,6 +184,8 @@ const IndexPage = () => {
           <img src={toOptimizedImage(`/social/socialMedia4.png`)} alt={'social media 4'} />
         </div>
       </div>
+
+      {/* Footer */}
       <AttributeGrid />
     </Layout>
   );
