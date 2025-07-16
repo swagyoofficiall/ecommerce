@@ -12,28 +12,27 @@ import LayoutOption from '../components/LayoutOption';
 import ProductCardGrid from '../components/ProductCardGrid';
 import Button from '../components/Button';
 import Config from '../config.json';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase'; // ✅ Add this
 
-const ShopPage = (props) => {
+const ShopPage = () => {
   const [showFilter, setShowFilter] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // ✅ Supabase products state
 
   useEffect(() => {
+    fetchProducts();
     window.addEventListener('keydown', escapeHandler);
     return () => window.removeEventListener('keydown', escapeHandler);
   }, []);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const { data, error } = await supabase.from('products').select('*');
-      if (error) {
-        console.error('Error fetching products:', error);
-      } else {
-        setProducts(data);
-      }
-    };
-    fetchProducts();
-  }, []);
+  const fetchProducts = async () => {
+    const { data, error } = await supabase.from('products').select('*');
+    if (error) {
+      console.error('❌ Supabase fetch error:', error);
+    } else {
+      console.log('✅ Supabase products:', data);
+      setProducts(data);
+    }
+  };
 
   const escapeHandler = (e) => {
     if (e?.keyCode === undefined) return;
@@ -54,13 +53,15 @@ const ShopPage = (props) => {
             />
           </div>
         </Container>
+
         <Banner
           maxWidth={'650px'}
           name={`Woman's Sweaters`}
           subtitle={
-            'Look to our women’s sweaters for modern takes on one-and-done dressing. From midis in bold prints to dramatic floor-sweeping styles and easy all-in-ones, our edit covers every mood.'
+            'Look to our women’s sweaters for modern takes on one-and-done dressing...'
           }
         />
+
         <Container size={'large'} spacing={'min'}>
           <div className={styles.metaContainer}>
             <span className={styles.itemCount}>{products.length} items</span>
@@ -81,28 +82,32 @@ const ShopPage = (props) => {
               </div>
             </div>
           </div>
+
           <CardController
             closeFilter={() => setShowFilter(false)}
             visible={showFilter}
             filters={Config.filters}
           />
+
           <div className={styles.chipsContainer}>
             <Chip name={'XS'} />
             <Chip name={'S'} />
           </div>
+
+          {/* ✅ Live Supabase products */}
           <div className={styles.productContainer}>
             <span className={styles.mobileItemCount}>{products.length} items</span>
-            <ProductCardGrid data={products}></ProductCardGrid>
+            <ProductCardGrid data={products} />
           </div>
+
           <div className={styles.loadMoreContainer}>
-            <span>{products.length} items loaded</span>
+            <span>{products.length} of {products.length}</span>
             <Button fullWidth level={'secondary'}>
               LOAD MORE
             </Button>
           </div>
         </Container>
       </div>
-
       <LayoutOption />
     </Layout>
   );
