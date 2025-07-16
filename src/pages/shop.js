@@ -12,31 +12,31 @@ import LayoutOption from '../components/LayoutOption';
 import ProductCardGrid from '../components/ProductCardGrid';
 import Button from '../components/Button';
 import Config from '../config.json';
-import { supabase } from '../lib/supabase'; // ✅ Add this
+
+import { supabase } from '../lib/supabase'; // ✅ Ensure you have supabase.js client setup
 
 const ShopPage = () => {
   const [showFilter, setShowFilter] = useState(false);
-  const [products, setProducts] = useState([]); // ✅ Supabase products state
+  const [products, setProducts] = useState([]);
 
+  // ✅ Fetch products from Supabase
   useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase.from('products').select('*');
+      if (error) {
+        console.error('Error fetching products:', error.message);
+      } else {
+        setProducts(data);
+      }
+    };
     fetchProducts();
+
     window.addEventListener('keydown', escapeHandler);
     return () => window.removeEventListener('keydown', escapeHandler);
   }, []);
 
-  const fetchProducts = async () => {
-    const { data, error } = await supabase.from('products').select('*');
-    if (error) {
-      console.error('❌ Supabase fetch error:', error);
-    } else {
-      console.log('✅ Supabase products:', data);
-      setProducts(data);
-    }
-  };
-
   const escapeHandler = (e) => {
-    if (e?.keyCode === undefined) return;
-    if (e.keyCode === 27) setShowFilter(false);
+    if (e?.keyCode === 27) setShowFilter(false);
   };
 
   return (
@@ -47,8 +47,7 @@ const ShopPage = () => {
             <Breadcrumbs
               crumbs={[
                 { link: '/', label: 'Home' },
-                { link: '/', label: 'Woman' },
-                { label: 'Sweaters' },
+                { label: 'Shop' },
               ]}
             />
           </div>
@@ -56,10 +55,8 @@ const ShopPage = () => {
 
         <Banner
           maxWidth={'650px'}
-          name={`Woman's Sweaters`}
-          subtitle={
-            'Look to our women’s sweaters for modern takes on one-and-done dressing...'
-          }
+          name={`All Products`}
+          subtitle={`Shop the latest collection available in-store.`}
         />
 
         <Container size={'large'} spacing={'min'}>
@@ -74,9 +71,7 @@ const ShopPage = () => {
                 <Icon symbol={'filter'} />
                 <span>Filters</span>
               </div>
-              <div
-                className={`${styles.iconContainer} ${styles.sortContainer}`}
-              >
+              <div className={`${styles.iconContainer} ${styles.sortContainer}`}>
                 <span>Sort by</span>
                 <Icon symbol={'caret'} />
               </div>
@@ -94,15 +89,36 @@ const ShopPage = () => {
             <Chip name={'S'} />
           </div>
 
-          {/* ✅ Live Supabase products */}
+          {/* ✅ Render products from Supabase */}
           <div className={styles.productContainer}>
-            <span className={styles.mobileItemCount}>{products.length} items</span>
-            <ProductCardGrid data={products} />
+            {products.length === 0 ? (
+              <p>No products found.</p>
+            ) : (
+              <div
+                style={{
+                  display: 'grid',
+                  gap: '2rem',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                }}
+              >
+                {products.map((product) => (
+                  <div key={product.id} style={{ border: '1px solid #ddd', padding: '1rem', borderRadius: '10px', background: '#fff' }}>
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }}
+                    />
+                    <h3>{product.name}</h3>
+                    <p>₹{product.price}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className={styles.loadMoreContainer}>
             <span>{products.length} of {products.length}</span>
-            <Button fullWidth level={'secondary'}>
+            <Button fullWidth level={'secondary'} disabled>
               LOAD MORE
             </Button>
           </div>
