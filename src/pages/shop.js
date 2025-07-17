@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import * as styles from './shopV2.module.css'; // ✅ use V2 design
+import * as styles from './shopV2.module.css';
 
 import Accordion from '../components/Accordion';
 import Banner from '../components/Banner';
@@ -12,7 +12,7 @@ import ProductCardGrid from '../components/ProductCardGrid';
 import Button from '../components/Button';
 
 import Config from '../config.json';
-import { supabase } from '../lib/supabase'; // ✅ Supabase client
+import { supabase } from '../lib/supabase';
 
 const ShopPage = () => {
   const [products, setProducts] = useState([]);
@@ -32,7 +32,7 @@ const ShopPage = () => {
 
   const filterTick = (e, categoryIndex, labelIndex) => {
     const copy = [...filterState];
-    copy[categoryIndex].items[labelIndex].value = !e.target.value;
+    copy[categoryIndex].items[labelIndex].value = !copy[categoryIndex].items[labelIndex].value;
     setFilterState(copy);
   };
 
