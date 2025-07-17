@@ -8,28 +8,29 @@ import Slider from '../Slider';
 
 const ProductCardGrid = (props) => {
   const [showQuickView, setShowQuickView] = useState(false);
-  const { height, columns = 3, data, spacing, showSlider = false } = props;
+  const { height, columns = 3, data = [], spacing, showSlider = false } = props;
+
   const columnCount = {
     gridTemplateColumns: `repeat(${columns}, 1fr)`,
   };
 
   const renderCards = () => {
-    return data.map((product, index) => {
-      return (
-        <ProductCard
-          key={index}
-          height={height}
-          price={`₹${Number(product.price).toLocaleString('en-IN')}`}
-          imageAlt={product.alt}
-          name={product.name}
-          image={product.image}
-          meta={product.meta}
-          originalPrice={product.originalPrice}
-          link={product.link}
-          showQuickView={() => setShowQuickView(true)}
-        />
-      );
-    });
+    return data.map((product, index) => (
+      <ProductCard
+        key={index}
+        height={height}
+        price={`₹${Number(product.price).toLocaleString('en-IN')}`}
+        imageAlt={product.name}
+        name={product.name}
+        image={product.image_url}
+        meta={product.description || product.meta}
+        originalPrice={product.original_price
+          ? `₹${Number(product.original_price).toLocaleString('en-IN')}`
+          : null}
+        link={`/product/${product.slug || product.id}`}
+        showQuickView={() => setShowQuickView(true)}
+      />
+    ));
   };
 
   return (
@@ -40,12 +41,12 @@ const ProductCardGrid = (props) => {
         }`}
         style={columnCount}
       >
-        {data && renderCards()}
+        {data.length > 0 ? renderCards() : <p>No products found.</p>}
       </div>
 
       {showSlider === true && (
         <div className={styles.mobileSlider}>
-          <Slider spacing={spacing}>{data && renderCards()}</Slider>
+          <Slider spacing={spacing}>{renderCards()}</Slider>
         </div>
       )}
 
