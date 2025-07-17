@@ -1,7 +1,7 @@
+// ✅ Multi-currency CurrencyFormatter (your version — confirmed good)
 import React from 'react';
 import { isNumeric } from '../../helpers/general';
 
-// Global fallback currency (INR)
 const DEFAULT_CURRENCY = 'INR';
 const CURRENCY_LOCALES = {
   INR: 'en-IN',
