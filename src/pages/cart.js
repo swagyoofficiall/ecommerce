@@ -11,6 +11,7 @@ import OrderSummary from '../components/OrderSummary';
 
 import * as styles from './cart.module.css';
 
+// ✅ Supabase client using env vars
 const supabase = createClient(
   process.env.GATSBY_SUPABASE_URL,
   process.env.GATSBY_SUPABASE_ANON_KEY
@@ -20,7 +21,6 @@ const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch cart items for current user from Supabase
   useEffect(() => {
     async function fetchCart() {
       try {
@@ -37,15 +37,12 @@ const CartPage = () => {
           return;
         }
 
-        // Assuming you have a "cart_items" table linked to users
-        // and "products" table for product details
-
-        // Fetch cart items joined with product details
-        let { data, error } = await supabase
+        // ✅ Fetch cart items joined with product info
+        const { data, error } = await supabase
           .from('cart_items')
           .select(
             `id, quantity,
-             product:products (
+             products (
                id, name, price, image_url, color, size
              )`
           )
@@ -53,21 +50,20 @@ const CartPage = () => {
 
         if (error) throw error;
 
-        // Map data to shape expected by CartItem component
         const formattedItems = data.map((item) => ({
           id: item.id,
           quantity: item.quantity,
-          name: item.product.name,
-          price: item.product.price,
-          image: item.product.image_url,
-          color: item.product.color,
-          size: item.product.size,
-          alt: item.product.name,
+          name: item.products.name,
+          price: item.products.price,
+          image: item.products.image_url,
+          color: item.products.color,
+          size: item.products.size,
+          alt: item.products.name,
         }));
 
         setCartItems(formattedItems);
       } catch (error) {
-        console.error('Error fetching cart items:', error.message);
+        console.error('Error loading cart:', error.message);
         setCartItems([]);
       } finally {
         setLoading(false);
@@ -80,7 +76,7 @@ const CartPage = () => {
   if (loading) {
     return (
       <div className={styles.contentContainer}>
-        <Container size={'large'} spacing={'min'}>
+        <Container size="large" spacing="min">
           <h3>Loading your cart...</h3>
         </Container>
       </div>
@@ -90,11 +86,11 @@ const CartPage = () => {
   return (
     <div>
       <div className={styles.contentContainer}>
-        <Container size={'large'} spacing={'min'}>
+        <Container size="large" spacing="min">
           <div className={styles.headerContainer}>
             <div className={styles.shoppingContainer}>
-              <Link className={styles.shopLink} to={'/shop'}>
-                <Icon symbol={'arrow'}></Icon>
+              <Link className={styles.shopLink} to="/shop">
+                <Icon symbol="arrow" />
                 <span className={styles.continueShopping}>
                   Continue Shopping
                 </span>
@@ -102,22 +98,23 @@ const CartPage = () => {
             </div>
             <Brand />
             <div className={styles.loginContainer}>
-              <Link to={'/login'}>Login</Link>
+              <Link to="/login">Login</Link>
             </div>
           </div>
+
           <div className={styles.summaryContainer}>
             <h3>My Bag</h3>
             <div className={styles.cartContainer}>
               <div className={styles.cartItemsContainer}>
                 {cartItems.length > 0 ? (
                   cartItems.map((item) => (
-                    <CartItem key={item.id} {...item} />
+                    <CartItem key={item.id} {...item} currency="₹" />
                   ))
                 ) : (
                   <p>Your cart is empty.</p>
                 )}
               </div>
-              <OrderSummary cartItems={cartItems} />
+              <OrderSummary cartItems={cartItems} currency="₹" />
             </div>
           </div>
         </Container>
@@ -128,3 +125,4 @@ const CartPage = () => {
 };
 
 export default CartPage;
+v
