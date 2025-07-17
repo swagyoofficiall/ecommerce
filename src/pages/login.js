@@ -8,7 +8,14 @@ import Layout from '../components/Layout/Layout';
 import FormInputField from '../components/FormInputField/FormInputField';
 import Button from '../components/Button';
 
-const LoginPage = (props) => {
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.GATSBY_SUPABASE_URL,
+  process.env.GATSBY_SUPABASE_ANON_KEY
+);
+
+const LoginPage = () => {
   const initialState = {
     email: '',
     password: '',
@@ -28,7 +35,7 @@ const LoginPage = (props) => {
     setLoginForm(tempForm);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let validForm = true;
     const tempError = { ...errorForm };
@@ -50,16 +57,28 @@ const LoginPage = (props) => {
 
     if (validForm === true) {
       setErrorForm(errorState);
+      setErrorMessage('');
 
-      //mock login
-      if (loginForm.email !== 'error@example.com') {
-        navigate('/account');
-        window.localStorage.setItem('key', 'sampleToken');
-      } else {
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: loginForm.email,
+          password: loginForm.password,
+        });
+
+        if (error) {
+          setErrorMessage(error.message || 'Login failed');
+          window.scrollTo(0, 0);
+          return;
+        }
+
+        if (data.user) {
+          // Redirect after successful login
+          navigate('/account'); // or '/shop' if you prefer
+          // Optionally store token or user info if needed
+        }
+      } catch (err) {
+        setErrorMessage('Unexpected error occurred. Please try again.');
         window.scrollTo(0, 0);
-        setErrorMessage(
-          'There is no such account associated with this email address'
-        );
       }
     } else {
       setErrorMessage('');
@@ -86,12 +105,12 @@ const LoginPage = (props) => {
           <form
             noValidate
             className={styles.loginForm}
-            onSubmit={(e) => handleSubmit(e)}
+            onSubmit={handleSubmit}
           >
             <FormInputField
               id={'email'}
               value={loginForm.email}
-              handleChange={(id, e) => handleChange(id, e)}
+              handleChange={handleChange}
               type={'email'}
               labelName={'Email'}
               error={errorForm.email}
@@ -100,7 +119,7 @@ const LoginPage = (props) => {
             <FormInputField
               id={'password'}
               value={loginForm.password}
-              handleChange={(id, e) => handleChange(id, e)}
+              handleChange={handleChange}
               type={'password'}
               labelName={'Password'}
               error={errorForm.password}
