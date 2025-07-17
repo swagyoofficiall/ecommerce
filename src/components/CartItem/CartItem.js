@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
-
+import React, { useState, useContext } from 'react';
 import AdjustItem from '../AdjustItem';
 import CurrencyFormatter from '../CurrencyFormatter';
 import Drawer from '../Drawer';
 import RemoveItem from '../RemoveItem';
 import QuickView from '../QuickView';
-
 import * as styles from './CartItem.module.css';
 import { navigate } from 'gatsby';
 import { toOptimizedImage } from '../../helpers/general';
 
+// Currency context (you'll use this if you want to allow currency switch in future)
+import { CurrencyContext } from '../../context/CurrencyContext';
+
 const CartItem = (props) => {
   const [showQuickView, setShowQuickView] = useState(false);
   const { image, alt, color, name, size, price } = props;
+
+  // Default currency is INR ₹
+  const { currency = 'INR', symbol = '₹', rate = 1 } = useContext(CurrencyContext) || {};
+
+  const convertedPrice = Math.round(price * rate);
 
   return (
     <div className={styles.root}>
@@ -41,11 +47,13 @@ const CartItem = (props) => {
         <AdjustItem />
       </div>
       <div className={styles.priceContainer}>
-        <CurrencyFormatter amount={price} appendZero />
+        {/* Show price in selected or default currency */}
+        <span>{symbol}{convertedPrice}.00</span>
       </div>
       <div className={styles.removeContainer}>
         <RemoveItem />
       </div>
+
       <Drawer visible={showQuickView} close={() => setShowQuickView(false)}>
         <QuickView close={() => setShowQuickView(false)} />
       </Drawer>
