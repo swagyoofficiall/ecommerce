@@ -8,26 +8,26 @@ import * as styles from './CartItem.module.css';
 import { navigate } from 'gatsby';
 import { toOptimizedImage } from '../../helpers/general';
 
-// Currency context (you'll use this if you want to allow currency switch in future)
 import { CurrencyContext } from '../../context/CurrencyContext';
 
 const CartItem = (props) => {
   const [showQuickView, setShowQuickView] = useState(false);
   const { image, alt, color, name, size, price } = props;
 
-  // Default currency is INR ₹
-  const { currency = 'INR', symbol = '₹', rate = 1 } = useContext(CurrencyContext) || {};
+  // Currency context fallback is INR ₹
+  const { currency = 'INR', rate = 1 } = useContext(CurrencyContext) || {};
 
-  const convertedPrice = Math.round(price * rate);
+  // Convert price based on selected currency rate
+  const convertedPrice = parseFloat(price) * rate;
 
   return (
     <div className={styles.root}>
       <div
         className={styles.imageContainer}
-        role={'presentation'}
+        role="presentation"
         onClick={() => navigate('/product/sample')}
       >
-        <img src={toOptimizedImage(image)} alt={alt}></img>
+        <img src={toOptimizedImage(image)} alt={alt} />
       </div>
       <div className={styles.itemContainer}>
         <span className={styles.name}>{name}</span>
@@ -37,7 +37,7 @@ const CartItem = (props) => {
         </div>
         <div
           className={styles.editContainer}
-          role={'presentation'}
+          role="presentation"
           onClick={() => setShowQuickView(true)}
         >
           <span>Edit</span>
@@ -47,8 +47,7 @@ const CartItem = (props) => {
         <AdjustItem />
       </div>
       <div className={styles.priceContainer}>
-        {/* Show price in selected or default currency */}
-        <span>{symbol}{convertedPrice}.00</span>
+        <CurrencyFormatter amount={convertedPrice} currency={currency} appendZero />
       </div>
       <div className={styles.removeContainer}>
         <RemoveItem />
