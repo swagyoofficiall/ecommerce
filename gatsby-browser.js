@@ -1,7 +1,11 @@
 import React from 'react';
-
 import { NotificationProvider } from './src/context/AddItemNotificationProvider';
+import { CurrencyProvider } from './src/components/CurrencyFormatter/CurrencyContext';
 
 export const wrapRootElement = ({ element }) => (
-  <NotificationProvider>{element}</NotificationProvider>
+  <CurrencyProvider>
+    <NotificationProvider>
+      {element}
+    </NotificationProvider>
+  </CurrencyProvider>
 );
