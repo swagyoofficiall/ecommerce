@@ -7,18 +7,43 @@ import FormInputField from '../components/FormInputField/FormInputField';
 import Button from '../components/Button';
 import AttributeGrid from '../components/AttributeGrid';
 
-const ForgotPage = (props) => {
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.GATSBY_SUPABASE_URL,
+  process.env.GATSBY_SUPABASE_ANON_KEY
+);
+
+const ForgotPage = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+
     if (validateEmail(email) !== true) {
       setError('Not a valid email address');
       return;
     }
-    setEmail('');
-    setError('');
+
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+
+      if (error) {
+        setError(error.message || 'Failed to send reset email.');
+        return;
+      }
+
+      setSuccessMessage(
+        'If your email is registered, a password reset link has been sent.'
+      );
+      setEmail('');
+    } catch (err) {
+      setError('Unexpected error occurred. Please try again.');
+    }
   };
 
   return (
@@ -30,10 +55,14 @@ const ForgotPage = (props) => {
           sent to the address below containing a link to verify your email
           address.
         </p>
+
+        {error && <p className={styles.errorMessage}>{error}</p>}
+        {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
+
         <form
           className={styles.formContainer}
           noValidate
-          onSubmit={(e) => handleSubmit(e)}
+          onSubmit={handleSubmit}
         >
           <FormInputField
             id={'email'}
