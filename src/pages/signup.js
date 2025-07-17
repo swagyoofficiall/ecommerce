@@ -12,7 +12,14 @@ import Layout from '../components/Layout/Layout';
 import FormInputField from '../components/FormInputField/FormInputField';
 import Button from '../components/Button';
 
-const SignupPage = (props) => {
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.GATSBY_SUPABASE_URL,
+  process.env.GATSBY_SUPABASE_ANON_KEY
+);
+
+const SignupPage = () => {
   const initialState = {
     firstName: '',
     lastName: '',
@@ -29,23 +36,25 @@ const SignupPage = (props) => {
 
   const [signupForm, setSignupForm] = useState(initialState);
   const [errorForm, setErrorForm] = useState(errorState);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (id, e) => {
     const tempForm = { ...signupForm, [id]: e };
     setSignupForm(tempForm);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let validForm = true;
     const tempError = { ...errorState };
+    setErrorMessage('');
 
-    if (isEmpty(signupForm.firstName) === true) {
+    if (isEmpty(signupForm.firstName)) {
       tempError.firstName = 'Field required';
       validForm = false;
     }
 
-    if (isEmpty(signupForm.lastName) === true) {
+    if (isEmpty(signupForm.lastName)) {
       tempError.lastName = 'Field required';
       validForm = false;
     }
@@ -62,13 +71,34 @@ const SignupPage = (props) => {
       validForm = false;
     }
 
-    if (validForm === true) {
-      setErrorForm(errorState);
-      navigate('/accountSuccess');
-      window.localStorage.setItem('key', 'sampleToken');
-      //create account endpoint
-    } else {
-      setErrorForm(tempError);
+    setErrorForm(tempError);
+
+    if (!validForm) return;
+
+    try {
+      // Signup with email + password
+      const { data, error } = await supabase.auth.signUp({
+        email: signupForm.email,
+        password: signupForm.password,
+        options: {
+          data: {
+            first_name: signupForm.firstName,
+            last_name: signupForm.lastName,
+          },
+        },
+      });
+
+      if (error) {
+        setErrorMessage(error.message || 'Signup failed');
+        return;
+      }
+
+      if (data.user) {
+        // Redirect to accountSuccess page after signup
+        navigate('/accountSuccess');
+      }
+    } catch (err) {
+      setErrorMessage('Unexpected error occurred. Please try again.');
     }
   };
 
@@ -80,15 +110,20 @@ const SignupPage = (props) => {
           <span className={styles.subtitle}>
             Please enter your the information below:
           </span>
+
+          {errorMessage && (
+            <p style={{ color: 'red', marginBottom: '1rem' }}>{errorMessage}</p>
+          )}
+
           <form
             noValidate
             className={styles.signupForm}
-            onSubmit={(e) => handleSubmit(e)}
+            onSubmit={handleSubmit}
           >
             <FormInputField
               id={'firstName'}
               value={signupForm.firstName}
-              handleChange={(id, e) => handleChange(id, e)}
+              handleChange={handleChange}
               type={'input'}
               labelName={'First Name'}
               error={errorForm.firstName}
@@ -97,7 +132,7 @@ const SignupPage = (props) => {
             <FormInputField
               id={'lastName'}
               value={signupForm.lastName}
-              handleChange={(id, e) => handleChange(id, e)}
+              handleChange={handleChange}
               type={'input'}
               labelName={'Last Name'}
               error={errorForm.lastName}
@@ -106,7 +141,7 @@ const SignupPage = (props) => {
             <FormInputField
               id={'email'}
               value={signupForm.email}
-              handleChange={(id, e) => handleChange(id, e)}
+              handleChange={handleChange}
               type={'email'}
               labelName={'Email'}
               error={errorForm.email}
@@ -115,7 +150,7 @@ const SignupPage = (props) => {
             <FormInputField
               id={'password'}
               value={signupForm.password}
-              handleChange={(id, e) => handleChange(id, e)}
+              handleChange={handleChange}
               type={'password'}
               labelName={'Password'}
               error={errorForm.password}
