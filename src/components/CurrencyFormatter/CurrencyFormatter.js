@@ -1,20 +1,14 @@
-import React, { useContext } from 'react';
-import { CurrencyContext } from '../../context/CurrencyContext';
+import React from 'react';
 import { isNumeric } from '../../helpers/general';
 
 const CurrencyFormatter = ({ amount, appendZero = false }) => {
-  const { currency } = useContext(CurrencyContext);
-
   let displayAmount =
     (typeof amount !== 'number' && parseFloat(amount?.replace(/[^0-9.]/g, ''))) ||
     amount;
 
-  const languageCode =
-    typeof window !== 'undefined' ? window.navigator.language : 'en-IN';
-
-  const formatObject = new Intl.NumberFormat(languageCode, {
+  const formatObject = new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency,
+    currency: 'INR',
     minimumFractionDigits: appendZero ? 2 : 0,
     maximumFractionDigits: 2,
   });
@@ -22,9 +16,7 @@ const CurrencyFormatter = ({ amount, appendZero = false }) => {
   let formattedPrice = formatObject.format(displayAmount);
 
   return isNumeric(amount) ? (
-    <>
-      <span>{formattedPrice}</span>
-    </>
+    <span>{formattedPrice}</span>
   ) : (
     'No price available'
   );
