@@ -7,7 +7,7 @@ import CurrencyFormatter from '../CurrencyFormatter';
 
 import * as styles from './OrderSummary.module.css';
 
-// Currency conversion rates (dummy, replace with API later if needed)
+// Currency conversion rates (replace with API later if needed)
 const conversionRates = {
   INR: 1,
   USD: 0.012,
@@ -15,26 +15,38 @@ const conversionRates = {
   GBP: 0.0095,
 };
 
-const OrderSummary = ({ cartTotal = 0 }) => {
-  const [coupon, setCoupon] = useState('');
-  const [giftCard, setGiftCard] = useState('');
+const OrderSummary = ({ cartTotal = 0, applyCoupon = () => {}, appliedDiscount = 0 }) => {
+  const [couponCode, setCouponCode] = useState('');
   const [currency, setCurrency] = useState('INR');
+  const [discountError, setDiscountError] = useState('');
+  const [finalTotal, setFinalTotal] = useState(cartTotal);
 
-  // Convert based on selected currency
+  useEffect(() => {
+    const totalAfterDiscount = Math.max(0, cartTotal - appliedDiscount);
+    setFinalTotal(totalAfterDiscount);
+  }, [cartTotal, appliedDiscount]);
+
   const convertAmount = (amountInINR) => {
     const rate = conversionRates[currency] || 1;
     return amountInINR * rate;
   };
 
-  const formattedSubtotal = convertAmount(cartTotal);
-  const formattedTax = convertAmount(0); // Future: apply tax logic
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) {
+      setDiscountError('Please enter a coupon code');
+      return;
+    }
+
+    setDiscountError('');
+    applyCoupon(couponCode);
+  };
 
   return (
     <div className={styles.root}>
       <div className={styles.orderSummary}>
-        <span className={styles.title}>order summary</span>
+        <span className={styles.title}>Order Summary</span>
 
-        {/* 🌍 Currency Switcher */}
+        {/* 🌍 Currency Selector */}
         <div style={{ margin: '10px 0' }}>
           <label style={{ fontWeight: 500 }}>Currency:</label>{' '}
           <select
@@ -48,66 +60,86 @@ const OrderSummary = ({ cartTotal = 0 }) => {
           </select>
         </div>
 
+        {/* Price Breakdown */}
         <div className={styles.calculationContainer}>
           <div className={styles.labelContainer}>
             <span>Subtotal</span>
             <span>
               <CurrencyFormatter
-                amount={formattedSubtotal}
+                amount={convertAmount(cartTotal)}
                 currency={currency}
               />
             </span>
           </div>
+
+          {appliedDiscount > 0 && (
+            <div className={styles.labelContainer}>
+              <span>Discount</span>
+              <span>- 
+                <CurrencyFormatter
+                  amount={convertAmount(appliedDiscount)}
+                  currency={currency}
+                />
+              </span>
+            </div>
+          )}
+
           <div className={styles.labelContainer}>
             <span>Shipping</span>
-            <span>---</span>
+            <span>—</span>
           </div>
+
           <div className={styles.labelContainer}>
             <span>Tax</span>
-            <span>
-              <CurrencyFormatter amount={formattedTax} currency={currency} />
-            </span>
+            <span>—</span>
           </div>
         </div>
 
+        {/* Coupon Input */}
         <div className={styles.couponContainer}>
           <span>Coupon Code</span>
           <FormInputField
-            value={coupon}
-            handleChange={(_, val) => setCoupon(val)}
+            value={couponCode}
+            handleChange={(_, val) => setCouponCode(val)}
             id={'couponInput'}
             icon={'arrow'}
           />
-          <span>Gift Card</span>
-          <FormInputField
-            value={giftCard}
-            handleChange={(_, val) => setGiftCard(val)}
-            id={'giftCardInput'}
-            icon={'arrow'}
-          />
+          <Button
+            onClick={handleApplyCoupon}
+            fullWidth
+            level={'secondary'}
+            style={{ marginTop: '8px' }}
+          >
+            Apply Coupon
+          </Button>
+          {discountError && (
+            <div style={{ color: 'red', marginTop: '5px' }}>{discountError}</div>
+          )}
         </div>
 
+        {/* Total After Discount */}
         <div className={styles.totalContainer}>
           <span>Total:</span>
           <span>
             <CurrencyFormatter
-              amount={formattedSubtotal + formattedTax}
+              amount={convertAmount(finalTotal)}
               currency={currency}
             />
           </span>
         </div>
       </div>
 
+      {/* CTA Buttons */}
       <div className={styles.actionContainer}>
         <Button
           onClick={() => navigate('/orderConfirm')}
           fullWidth
           level={'primary'}
         >
-          checkout
+          Checkout
         </Button>
         <div className={styles.linkContainer}>
-          <Link to="/shop">CONTINUE SHOPPING</Link>
+          <Link to="/shop">Continue Shopping</Link>
         </div>
       </div>
     </div>
