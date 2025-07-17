@@ -16,7 +16,7 @@ const ProductCard = (props) => {
     originalPrice,
     meta,
     showQuickView,
-    slug, // 👈 make sure each product has a unique slug
+    slug,
     height = 580,
   } = props;
 
@@ -78,11 +78,11 @@ const ProductCard = (props) => {
           <span
             className={`${originalPrice !== undefined ? styles.salePrice : ''}`}
           >
-            <CurrencyFormatter amount={price} />
+            <CurrencyFormatter amount={price} currency="INR" />
           </span>
           {originalPrice && (
             <span className={styles.originalPrice}>
-              <CurrencyFormatter amount={originalPrice} />
+              <CurrencyFormatter amount={originalPrice} currency="INR" />
             </span>
           )}
         </div>
