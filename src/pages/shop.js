@@ -76,7 +76,7 @@ const ShopPage = () => {
               {products.length === 0 ? (
                 <p style={{ padding: '2rem', textAlign: 'center' }}>No products found.</p>
               ) : (
-                <ProductCardGrid height={'440px'} data={products} />
+                <ProductCardGrid height={'440px'} data={products} currencySymbol="₹" />
               )}
             </div>
           </div>
