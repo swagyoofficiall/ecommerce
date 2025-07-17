@@ -19,7 +19,7 @@ const ProductCardGrid = (props) => {
         <ProductCard
           key={index}
           height={height}
-          price={product.price}
+          price={`₹${Number(product.price).toLocaleString('en-IN')}`}
           imageAlt={product.alt}
           name={product.name}
           image={product.image}
