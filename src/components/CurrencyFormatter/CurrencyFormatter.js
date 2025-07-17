@@ -1,56 +1,61 @@
 import React from 'react';
 import { isNumeric } from '../../helpers/general';
-// import * as styles from './CurrencyFormatter.module.css';
 
 const CurrencyFormatter = ({
   amount,
-  currency = 'USD',
   appendZero = false,
-  useDollar = false,
 }) => {
+  const selectedCurrency =
+    typeof window !== 'undefined'
+      ? localStorage.getItem('selectedCurrency') || 'INR'
+      : 'INR';
+
   let displayAmount =
-    (typeof amount !== 'number' && parseFloat(amount?.replace('$', ''))) ||
+    (typeof amount !== 'number' && parseFloat(amount?.replace(/[^0-9.]/g, ''))) ||
     amount;
-  /* Set language display */
+
   const languageCode =
     typeof window !== 'undefined'
-      ? window.navigator.language || 'en-AU'
-      : 'en-AU';
+      ? window.navigator.language || 'en-IN'
+      : 'en-IN';
 
-  /* Format and return */
-  // isolate currency
   const formatObject = new Intl.NumberFormat(languageCode, {
     style: 'currency',
-    currency,
+    currency: selectedCurrency,
+    minimumFractionDigits: appendZero ? 2 : 0,
+    maximumFractionDigits: 2,
   });
-  let symbol = '$';
+
+  let symbol = selectedCurrency === 'INR' ? '₹' : selectedCurrency;
   let formattedPrice = formatObject.format(displayAmount);
+
   if ('formatToParts' in formatObject) {
-    const formattedPriceParts = formatObject.formatToParts(displayAmount);
-    if (useDollar === false) symbol = formattedPriceParts[0].value;
-    const currencyValue = formattedPriceParts.find(
-      (obj) => obj.type === 'currency'
-    );
-    const decimalValue = formattedPriceParts.find(
-      (obj) => obj.type === 'fraction'
-    );
-    formattedPrice = formattedPrice.replace(currencyValue.value, '');
+    const parts = formatObject.formatToParts(displayAmount);
+    const currencySymbol = parts.find((p) => p.type === 'currency');
+    const decimalValue = parts.find((p) => p.type === 'fraction');
+
+    if (currencySymbol) {
+      symbol = selectedCurrency === 'INR' ? '₹' : currencySymbol.value;
+    }
+
+    formattedPrice = parts
+      .filter((p) => p.type !== 'currency')
+      .map((p) => p.value)
+      .join('');
+
     if (decimalValue && decimalValue.value === '00' && !appendZero) {
       formattedPrice = formattedPrice.replace(`.${decimalValue.value}`, '');
     }
-  } else {
-    // new Intl.NumberFormat is not supported; return amount with dollar sign
-    formattedPrice = amount;
   }
 
-  const priceComponent = (
+  return isNumeric(amount) ? (
     <>
       <span>{symbol}</span>
       <span>{formattedPrice}</span>
     </>
+  ) : (
+    'No price available'
   );
-
-  return isNumeric(amount) ? priceComponent : 'No price available';
 };
 
 export default CurrencyFormatter;
