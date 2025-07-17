@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { navigate } from 'gatsby';
 
-const OrderIndexPage = (props) => {
+const AccountIndexPage = () => {
   useEffect(() => {
+    // Redirect to the user's order history page
     navigate('/account/orders/');
   }, []);
 
-  return <React.Fragment />;
+  return null; // No visible content since it's just a redirect
 };
 
-export default OrderIndexPage;
+export default AccountIndexPage;
