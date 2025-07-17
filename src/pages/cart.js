@@ -1,5 +1,6 @@
 import { Link } from 'gatsby';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
 import Brand from '../components/Brand';
 import CartItem from '../components/CartItem';
@@ -10,15 +11,81 @@ import OrderSummary from '../components/OrderSummary';
 
 import * as styles from './cart.module.css';
 
-const CartPage = (props) => {
-  const sampleCartItem = {
-    image: '/products/pdp1.jpeg',
-    alt: '',
-    name: 'Lambswool Crew Neck Jumper',
-    price: 220,
-    color: 'Anthracite Melange',
-    size: 'XS',
-  };
+const supabase = createClient(
+  process.env.GATSBY_SUPABASE_URL,
+  process.env.GATSBY_SUPABASE_ANON_KEY
+);
+
+const CartPage = () => {
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch cart items for current user from Supabase
+  useEffect(() => {
+    async function fetchCart() {
+      try {
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError) throw userError;
+
+        if (!user) {
+          setCartItems([]);
+          setLoading(false);
+          return;
+        }
+
+        // Assuming you have a "cart_items" table linked to users
+        // and "products" table for product details
+
+        // Fetch cart items joined with product details
+        let { data, error } = await supabase
+          .from('cart_items')
+          .select(
+            `id, quantity,
+             product:products (
+               id, name, price, image_url, color, size
+             )`
+          )
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        // Map data to shape expected by CartItem component
+        const formattedItems = data.map((item) => ({
+          id: item.id,
+          quantity: item.quantity,
+          name: item.product.name,
+          price: item.product.price,
+          image: item.product.image_url,
+          color: item.product.color,
+          size: item.product.size,
+          alt: item.product.name,
+        }));
+
+        setCartItems(formattedItems);
+      } catch (error) {
+        console.error('Error fetching cart items:', error.message);
+        setCartItems([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCart();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className={styles.contentContainer}>
+        <Container size={'large'} spacing={'min'}>
+          <h3>Loading your cart...</h3>
+        </Container>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -42,10 +109,15 @@ const CartPage = (props) => {
             <h3>My Bag</h3>
             <div className={styles.cartContainer}>
               <div className={styles.cartItemsContainer}>
-                <CartItem {...sampleCartItem} />
-                <CartItem {...sampleCartItem} />
+                {cartItems.length > 0 ? (
+                  cartItems.map((item) => (
+                    <CartItem key={item.id} {...item} />
+                  ))
+                ) : (
+                  <p>Your cart is empty.</p>
+                )}
               </div>
-              <OrderSummary />
+              <OrderSummary cartItems={cartItems} />
             </div>
           </div>
         </Container>
