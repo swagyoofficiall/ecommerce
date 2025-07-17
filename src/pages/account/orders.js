@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import * as styles from './orders.module.css';
 
 import AccountLayout from '../../components/AccountLayout/AccountLayout';
@@ -7,78 +7,39 @@ import Layout from '../../components/Layout/Layout';
 import OrderItem from '../../components/OrderItem/OrderItem';
 import { isAuth } from '../../helpers/general';
 import { navigate } from 'gatsby';
+import { supabase } from '../../helpers/supabaseClient';
 
-const OrderPage = (props) => {
-  if (isAuth() === false) {
-    navigate('/login');
-  }
+const OrderPage = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const sampleOrder1 = {
-    id: '2',
-    orderPlaced: 'Oct 12, 2021',
-    lastUpdate: 'Oct 12, 2021',
-    status: 'pending',
-    items: [
-      {
-        image: '/products/shirt1.jpg',
-        alt: 'order 1 product 1',
-        name: 'Lambswool Crew Neck Jumper',
-        quantity: '2',
-        price: '100',
-      },
-      {
-        image: '/products/shirt2.jpg',
-        alt: 'order 1 product 2',
-        name: 'Lambswool Crew Neck Jumper',
-        quantity: '1',
-        price: '300',
-      },
-    ],
-    shippingAddress: {
-      name: 'John Doe',
-      address: '1 Steam Mill Lane, Haymerket',
-      postal: '2000',
-      state: 'NSW',
-      country: 'Australia',
-    },
-    billingAddress: {
-      name: 'John Doe',
-      address: '1 Steam Mill Lane, Haymerket',
-      postal: '2000',
-      state: 'NSW',
-      country: 'Australia',
-    },
-  };
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const user = isAuth();
+      if (!user) {
+        navigate('/login');
+        return;
+      }
 
-  const sampleOrder2 = {
-    id: '1',
-    orderPlaced: 'Oct 11, 2021',
-    lastUpdate: 'Oct 11, 2021',
-    status: 'pending',
-    items: [
-      {
-        image: '/products/shirt1.jpg',
-        alt: 'order 1 product 1',
-        name: 'Lambswool Crew Neck Jumper',
-        quantity: '2',
-        price: '100',
-      },
-    ],
-    shippingAddress: {
-      name: 'John Doe',
-      address: '1 Steam Mill Lane, Haymerket',
-      postal: '2000',
-      state: 'NSW',
-      country: 'Australia',
-    },
-    billingAddress: {
-      name: 'John Doe',
-      address: '1 Steam Mill Lane, Haymerket',
-      postal: '2000',
-      state: 'NSW',
-      country: 'Australia',
-    },
-  };
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('user_email', user.email) // Match logged-in user's email
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        setOrders(data || []);
+      } catch (err) {
+        console.error('Error fetching orders:', err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   return (
     <Layout>
@@ -91,6 +52,7 @@ const OrderPage = (props) => {
           ]}
         />
         <h1>Orders</h1>
+
         <div className={`${styles.tableHeaderContainer} ${styles.gridStyle}`}>
           <span className={styles.tableHeader}>Order #</span>
           <span className={styles.tableHeader}>Order Placed</span>
@@ -98,8 +60,19 @@ const OrderPage = (props) => {
           <span className={styles.tableHeader}>Status</span>
         </div>
 
-        <OrderItem order={sampleOrder1} headerStyling={styles.gridStyle} />
-        <OrderItem order={sampleOrder2} headerStyling={styles.gridStyle} />
+        {loading ? (
+          <p>Loading orders...</p>
+        ) : orders.length === 0 ? (
+          <p>No orders found.</p>
+        ) : (
+          orders.map((order) => (
+            <OrderItem
+              key={order.id}
+              order={order}
+              headerStyling={styles.gridStyle}
+            />
+          ))
+        )}
       </AccountLayout>
     </Layout>
   );
