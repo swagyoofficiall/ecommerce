@@ -24,7 +24,7 @@ const Checkbox = (props) => {
           <span className={styles.innerBox}></span>
         </span>
       </div>
-      <label className={styles.label} forhtml={id}>
+      <label className={styles.label} htmlFor={id}>
         {label}
       </label>
     </div>
