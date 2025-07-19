@@ -1,13 +1,12 @@
 import React from 'react';
 import * as styles from './BoxOption.module.css';
 
-const BoxOption = (props) => {
-  const { data, setActive, isActive } = props;
+const BoxOption = ({ data, setActive, isActive }) => {
   return (
     <div
-      className={`${styles.root} ${isActive === true ? styles.isActive : ''}`}
+      className={`${styles.root} ${isActive ? styles.isActive : ''}`}
       onClick={() => setActive(data)}
-      role={'presentation'}
+      role="presentation"
     >
       <span className={styles.option}>{data}</span>
     </div>
