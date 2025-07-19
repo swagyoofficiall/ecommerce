@@ -10,17 +10,11 @@ import * as styles from './AddNotification.module.css';
 import { toOptimizedImage } from '../../helpers/general';
 
 const AddNotification = (props) => {
-  const sampleCartItem = {
-    image: '/products/pdp1.jpeg',
-    alt: '',
-    name: 'Lambswool Crew Neck Jumper',
-    price: 220,
-    color: 'Anthracite Melange',
-    size: 'XS',
-  };
-
   const ctxAddItemNotification = useContext(AddItemNotificationContext);
   const showNotif = ctxAddItemNotification.state?.open;
+  const product = ctxAddItemNotification.state?.item;
+
+  if (!product) return null; // no product added
 
   return (
     <div
@@ -30,31 +24,34 @@ const AddNotification = (props) => {
     >
       <div className={styles.header}>
         <div className={styles.iconContainer}>
-          <Icon symbol={'check'}></Icon>
+          <Icon symbol="check" />
         </div>
         <span>Item added to bag</span>
       </div>
 
       <div className={styles.newItemContainer}>
         <div className={styles.imageContainer}>
-          <img alt={sampleCartItem.alt} src={toOptimizedImage(sampleCartItem.image)} />
+          <img
+            alt={product.alt || product.name}
+            src={toOptimizedImage(product.image)}
+          />
         </div>
         <div className={styles.detailContainer}>
-          <span className={styles.name}>{sampleCartItem.name}</span>
-          <span className={styles.meta}>Color: {sampleCartItem.color}</span>
-          <span className={styles.meta}>Size: {sampleCartItem.size}</span>
+          <span className={styles.name}>{product.name}</span>
+          <span className={styles.meta}>Color: {product.color}</span>
+          <span className={styles.meta}>Size: {product.size}</span>
         </div>
       </div>
 
       <div className={styles.actionContainer}>
-        <Button onClick={props.openCart} level={'secondary'}>
-          view my bag (1)
+        <Button onClick={props.openCart} level="secondary">
+          view my bag
         </Button>
         <Button level="primary" href="/cart">
           checkout
         </Button>
         <div className={styles.linkContainer}>
-          <Link to={'/shop'}>continue shopping</Link>
+          <Link to="/shop">continue shopping</Link>
         </div>
       </div>
     </div>
