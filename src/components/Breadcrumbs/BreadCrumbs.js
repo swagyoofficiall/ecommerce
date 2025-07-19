@@ -1,10 +1,12 @@
 import React from 'react';
+import { Link } from 'gatsby';
 
 import * as styles from './BreadCrumbs.module.css';
 import Icon from '../Icons/Icon';
 
 const Breadcrumbs = ({ crumbs }) => {
   let crumbsOutput = crumbs;
+
   if (crumbsOutput && typeof crumbsOutput !== 'object') {
     if (crumbsOutput.indexOf('>') > -1) {
       crumbsOutput = crumbsOutput.split('>');
@@ -20,18 +22,16 @@ const Breadcrumbs = ({ crumbs }) => {
           <span key={crumbIndex}>
             {crumbIndex > 0 && (
               <span className={styles.spacer}>
-                <Icon symbol={'caret'}></Icon>
+                <Icon symbol={'caret'} />
               </span>
             )}
-            {typeof crumb === 'object' && 'link' in crumb && (
-              <a className={styles.crumb} href={crumb.link}>
+            {typeof crumb === 'object' && 'link' in crumb ? (
+              <Link className={styles.crumb} to={crumb.link}>
                 {crumb.label.trim()}
-              </a>
-            )}
-            {typeof crumb === 'object' && !('link' in crumb) && (
+              </Link>
+            ) : typeof crumb === 'object' ? (
               <span className={styles.crumb}>{crumb.label.trim()}</span>
-            )}
-            {typeof crumb !== 'object' && (
+            ) : (
               <span className={styles.crumb}>{crumb.trim()}</span>
             )}
           </span>
