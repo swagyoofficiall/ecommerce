@@ -1,47 +1,49 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import Icon from '../Icons/Icon';
 import * as styles from './AdjustItem.module.css';
 
-const AdjustItem = (props) => {
-  const { isTransparent } = props;
-  const [qty, setQty] = useState(1);
+const AdjustItem = ({ isTransparent, initialQty = 1, onQtyChange }) => {
+  const [qty, setQty] = useState(initialQty);
 
-  const handleOnChange = (e) => {
+  const handleQtyChange = (newQty) => {
+    const safeQty = Math.max(1, newQty);
+    setQty(safeQty);
+    if (onQtyChange) {
+      onQtyChange(safeQty); // notify parent to update cart in Supabase
+    }
+  };
+
+  const handleInputChange = (e) => {
     const num = parseInt(e.target.value);
-    setQty(num);
+    if (!isNaN(num)) {
+      handleQtyChange(num);
+    }
   };
 
   return (
-    <div
-      className={`${styles.root} ${
-        isTransparent === true ? styles.transparent : ''
-      }`}
-    >
+    <div className={`${styles.root} ${isTransparent ? styles.transparent : ''}`}>
       <div
         className={styles.iconContainer}
-        role={'presentation'}
-        onClick={() => {
-          if (qty <= 1) return;
-          setQty(qty - 1);
-        }}
+        role="presentation"
+        onClick={() => handleQtyChange(qty - 1)}
       >
-        <Icon symbol={'minus'}></Icon>
+        <Icon symbol="minus" />
       </div>
       <div className={styles.inputContainer}>
         <input
-          className={`${isTransparent === true ? styles.transparentInput : ''}`}
-          onChange={(e) => handleOnChange(e)}
-          type={'number'}
+          type="number"
           value={qty}
-        ></input>
+          className={isTransparent ? styles.transparentInput : ''}
+          onChange={handleInputChange}
+          min="1"
+        />
       </div>
       <div
-        role={'presentation'}
-        onClick={() => setQty(qty + 1)}
         className={styles.iconContainer}
+        role="presentation"
+        onClick={() => handleQtyChange(qty + 1)}
       >
-        <Icon symbol={'plus'}></Icon>
+        <Icon symbol="plus" />
       </div>
     </div>
   );
