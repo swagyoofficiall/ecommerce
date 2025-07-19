@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as styles from './AddressForm.module.css';
 
 import Button from '../Button';
 import FormInputField from '../FormInputField';
+import { supabase } from '../../lib/supabase'; // ✅ your Supabase client
 
 const AddressForm = (props) => {
   const { closeForm } = props;
@@ -27,41 +28,83 @@ const AddressForm = (props) => {
 
   const [form, setForm] = useState(initialState);
   const [errorForm, setErrorForm] = useState(errorState);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+    getUser();
+  }, []);
 
   const handleChange = (id, e) => {
-    const tempForm = { ...form, [id]: e };
-    setForm(tempForm);
+    setForm({ ...form, [id]: e });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorForm(errorState);
-    closeForm();
+
+    if (!userId) {
+      alert('User not logged in.');
+      return;
+    }
+
+    const { error } = await supabase.from('user_addresses').insert([
+      {
+        user_id: userId,
+        name: form.name,
+        address: form.address,
+        state: form.state,
+        postal: form.postal,
+        country: form.country,
+        company: form.company,
+      }
+    ]);
+
+    if (error) {
+      console.error('Insert error:', error.message);
+      alert('Error saving address.');
+      return;
+    }
+
+    closeForm(); // ✅ Close after saving
   };
 
   return (
     <div className={styles.root}>
-      <form className={styles.inputContainer} onSubmit={(e) => handleSubmit(e)}>
+      <form className={styles.inputContainer} onSubmit={handleSubmit}>
         <FormInputField
           id={'name'}
           value={form.name}
-          handleChange={(id, e) => handleChange(id, e)}
+          handleChange={handleChange}
           type={'input'}
           labelName={'Name'}
           error={errorForm.name}
         />
         <FormInputField
+          id={'company'}
+          value={form.company}
+          handleChange={handleChange}
+          type={'input'}
+          labelName={'Company'}
+          error={errorForm.company}
+        />
+        <FormInputField
           id={'address'}
           value={form.address}
-          handleChange={(id, e) => handleChange(id, e)}
+          handleChange={handleChange}
           type={'input'}
-          labelName={'Address'}
+          labelName={'Street Address'}
           error={errorForm.address}
         />
         <FormInputField
           id={'country'}
           value={form.country}
-          handleChange={(id, e) => handleChange(id, e)}
+          handleChange={handleChange}
           type={'input'}
           labelName={'Country'}
           error={errorForm.country}
@@ -69,7 +112,7 @@ const AddressForm = (props) => {
         <FormInputField
           id={'state'}
           value={form.state}
-          handleChange={(id, e) => handleChange(id, e)}
+          handleChange={handleChange}
           type={'input'}
           labelName={'State'}
           error={errorForm.state}
@@ -77,19 +120,12 @@ const AddressForm = (props) => {
         <FormInputField
           id={'postal'}
           value={form.postal}
-          handleChange={(id, e) => handleChange(id, e)}
+          handleChange={handleChange}
           type={'number'}
           labelName={'Postal Code'}
           error={errorForm.postal}
         />
-        <FormInputField
-          id={'address'}
-          value={form.address}
-          handleChange={(id, e) => handleChange(id, e)}
-          type={'input'}
-          labelName={'Street'}
-          error={errorForm.address}
-        />
+
         <div className={styles.actionContainers}>
           <Button fullWidth type={'submit'} level={'primary'}>
             Save
