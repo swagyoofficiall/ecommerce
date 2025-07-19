@@ -29,3 +29,20 @@
         margin-left: 0px;
     }
 }
+
+/* ✅ Admin Button Style */
+.adminButton {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 0.6rem 1.2rem;
+    background-color: #7e3ff2;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.adminButton:hover {
+    background-color: #5f2ec9;
+}
