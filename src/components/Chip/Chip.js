@@ -6,9 +6,9 @@ import Icon from '../Icons/Icon';
 const Chip = (props) => {
   const { name, close } = props;
   return (
-    <div className={styles.root} role={'presentation'} onClick={close}>
+    <div className={styles.root} role="presentation" onClick={close}>
       <span>{name}</span>
-      <Icon symbol={'cross'}></Icon>
+      <Icon symbol="cross" />
     </div>
   );
 };
