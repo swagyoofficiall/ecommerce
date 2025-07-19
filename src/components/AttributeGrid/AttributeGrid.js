@@ -1,26 +1,24 @@
 import React from 'react';
-
 import Attribute from '../Attribute';
-
 import * as styles from './AttributeGrid.module.css';
 
-const AttributeGrid = (props) => {
+const AttributeGrid = () => {
   return (
     <div className={styles.root}>
       <Attribute
-        icon={'delivery'}
-        title={'free delivery worldwide'}
-        subtitle={'Click to learn more'}
+        icon="delivery"
+        title="Free delivery only above 1500"
+        subtitle="Click to learn more"
       />
       <Attribute
-        icon={'cycle'}
-        title={'returns'}
-        subtitle={'Return goods in 30 days'}
+        icon="cycle"
+        title="Returns"
+        subtitle="Return goods in 3 days"
       />
       <Attribute
-        icon={'creditcard'}
-        title={'secured payment'}
-        subtitle={'Shop safely'}
+        icon="creditcard"
+        title="Secured payment"
+        subtitle="Shop safely"
       />
     </div>
   );
