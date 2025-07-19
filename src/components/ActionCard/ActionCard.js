@@ -6,10 +6,11 @@ import Icon from '../Icons/Icon';
 
 const ActionCard = (props) => {
   const { title, icon, subtitle, link, size } = props;
+
   return (
     <div
       className={styles.root}
-      role={'presentation'}
+      role="presentation"
       onClick={() => navigate(link)}
     >
       <div className={`${styles.iconContainer} ${styles[size]}`}>
@@ -18,7 +19,7 @@ const ActionCard = (props) => {
       <span className={styles.actionName}>{title}</span>
       <span className={styles.link}>
         {subtitle}
-        <Icon symbol={'caret'}></Icon>
+        <Icon symbol="caret" />
       </span>
     </div>
   );
