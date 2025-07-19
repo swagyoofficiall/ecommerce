@@ -3,12 +3,10 @@ import { navigate } from 'gatsby';
 
 import Button from '../Button';
 import Icon from '../Icons/Icon';
-
 import * as styles from './Blog.module.css';
 import { toOptimizedImage } from '../../helpers/general';
 
-const Blog = (props) => {
-  const { title, category, image, alt, children } = props;
+const Blog = ({ title, category, image, alt, children }) => {
   return (
     <div className={styles.root}>
       <span className={styles.category}>{category}</span>
@@ -20,17 +18,13 @@ const Blog = (props) => {
       <div className={styles.footerContainer}>
         <span>Share with:</span>
         <div className={styles.socialMediaListContainer}>
-          <div className={styles.socialMediaIconContainer}>
-            <Icon symbol={'twitterinverse'}></Icon>
-          </div>
-          <div className={styles.socialMediaIconContainer}>
-            <Icon symbol={'facebookinverse'}></Icon>
-          </div>
-          <div className={styles.socialMediaIconContainer}>
-            <Icon symbol={'pinterestinverse'}></Icon>
-          </div>
+          {['twitterinverse', 'facebookinverse', 'pinterestinverse'].map((icon) => (
+            <div key={icon} className={styles.socialMediaIconContainer}>
+              <Icon symbol={icon} />
+            </div>
+          ))}
         </div>
-        <Button onClick={() => navigate('/blog')} level={'secondary'}>
+        <Button onClick={() => navigate('/blog')} level="secondary">
           back to blog
         </Button>
       </div>
