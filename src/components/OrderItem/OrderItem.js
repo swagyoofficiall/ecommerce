@@ -12,8 +12,7 @@ const OrderItem = (props) => {
 
   let computedTotal = 0;
   for (let x = 0; x < order.items.length; x++) {
-    computedTotal =
-      computedTotal + order.items[x].price * order.items[x].quantity;
+    computedTotal += order.items[x].price * order.items[x].quantity;
   }
 
   const pad = (str, max) => {
@@ -22,23 +21,19 @@ const OrderItem = (props) => {
   };
 
   return (
-    <div
-      className={`${styles.root} ${
-        collapsed === true ? styles.paddingBottom : ''
-      }`}
-    >
+    <div className={`${styles.root} ${collapsed ? styles.paddingBottom : ''}`}>
       <div
         className={`${headerStyling} ${styles.orderHeader}`}
-        role={'presentation'}
+        role="presentation"
         onClick={() => setCollapsed(!collapsed)}
       >
         <div className={styles.orderMeta}>
           <span className={styles.orderId}>Order #{pad(order.id, 5)}</span>
-          <span
-            className={styles.orderTotalMeta}
-          >{`${order.items.length} products totaling `}</span>
+          <span className={styles.orderTotalMeta}>
+            {`${order.items.length} products totaling `}
+          </span>
           <span className={styles.total}>
-            <CurrencyFormatter amount={computedTotal}></CurrencyFormatter>
+            <CurrencyFormatter amount={computedTotal} />
           </span>
         </div>
         <div className={styles.od}>
@@ -52,15 +47,16 @@ const OrderItem = (props) => {
         </div>
         <div
           className={`${styles.toggleContainer} ${
-            collapsed === true ? styles.rotate : ''
+            collapsed ? styles.rotate : ''
           }`}
         >
-          <Icon symbol={'caret'} />
+          <Icon symbol="caret" />
         </div>
       </div>
+
       <div
         className={`${styles.detailsContainer} ${
-          collapsed === false ? styles.hide : styles.show
+          collapsed ? styles.show : styles.hide
         }`}
       >
         <div className={styles.addressDetailContainer}>
@@ -72,22 +68,24 @@ const OrderItem = (props) => {
             <span className={styles.address}>
               {order.shippingAddress?.address}
             </span>
-            <span
-              className={styles.address}
-            >{`${order.shippingAddress?.state} ${order.shippingAddress?.postal}`}</span>
+            <span className={styles.address}>
+              {`${order.shippingAddress?.state} ${order.shippingAddress?.postal}`}
+            </span>
             <span className={styles.address}>
               {order.shippingAddress?.country}
             </span>
           </div>
           <div className={styles.addressContainer}>
             <span className={styles.addressMeta}>Bill to</span>
-            <span className={styles.address}>{order.billingAddress?.name}</span>
+            <span className={styles.address}>
+              {order.billingAddress?.name}
+            </span>
             <span className={styles.address}>
               {order.billingAddress?.address}
             </span>
-            <span
-              className={styles.address}
-            >{`${order.billingAddress?.state} ${order.billingAddress?.postal}`}</span>
+            <span className={styles.address}>
+              {`${order.billingAddress?.state} ${order.billingAddress?.postal}`}
+            </span>
             <span className={styles.address}>
               {order.billingAddress?.country}
             </span>
@@ -95,33 +93,29 @@ const OrderItem = (props) => {
         </div>
 
         <div className={styles.itemList}>
-          {order.items.map((item, index) => {
-            return (
-              <div className={styles.itemContainer} key={index}>
-                <div
-                  role={'presentation'}
-                  onClick={() => navigate('/product/sample')}
-                  className={styles.imageContainer}
-                >
-                  <img alt={item.alt} src={toOptimizedImage(item.image)}></img>
-                </div>
-                <div>
-                  <span className={styles.itemName}>{item.name}</span>
-                  <div className={styles.orderItemMeta}>
-                    <span className={styles.itemQuantity}>
-                      Qty: {item.quantity}
-                    </span>
-                    <div className={styles.itemTotalMobile}>
-                      <CurrencyFormatter amount={item.quantity * item.price} />
-                    </div>
+          {order.items.map((item, index) => (
+            <div className={styles.itemContainer} key={index}>
+              <div
+                role="presentation"
+                onClick={() => navigate(`/product/${item.slug}`)}
+                className={styles.imageContainer}
+              >
+                <img alt={item.alt} src={toOptimizedImage(item.image)} />
+              </div>
+              <div>
+                <span className={styles.itemName}>{item.name}</span>
+                <div className={styles.orderItemMeta}>
+                  <span className={styles.itemQuantity}>Qty: {item.quantity}</span>
+                  <div className={styles.itemTotalMobile}>
+                    <CurrencyFormatter amount={item.quantity * item.price} />
                   </div>
                 </div>
-                <div className={styles.itemTotal}>
-                  <CurrencyFormatter amount={item.quantity * item.price} />
-                </div>
               </div>
-            );
-          })}
+              <div className={styles.itemTotal}>
+                <CurrencyFormatter amount={item.quantity * item.price} />
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className={styles.transactionDetails}>
@@ -130,11 +124,11 @@ const OrderItem = (props) => {
             <span>
               <CurrencyFormatter amount={computedTotal} />
             </span>
-            <span>GST: </span>
+            <span>GST:</span>
             <span>
               <CurrencyFormatter amount={0} />
             </span>
-            <span className={styles.bold}>Grand Total </span>
+            <span className={styles.bold}>Grand Total</span>
             <span className={styles.grandTotal}>
               <CurrencyFormatter amount={computedTotal} />
             </span>
