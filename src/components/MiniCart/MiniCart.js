@@ -14,7 +14,6 @@ const MiniCart = () => {
   const [loading, setLoading] = useState(true);
 
   const getCart = async () => {
-    setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       const items = await fetchCartItems(user.id);
@@ -47,15 +46,8 @@ const MiniCart = () => {
             cartItems.map((item) => (
               <MiniCartItem
                 key={item.id}
-                id={item.id}
-                image={item.product?.image}
-                alt={item.product?.name}
-                name={item.product?.name}
-                price={item.product?.price}
-                color={item.product?.color}
-                size={item.product?.size}
-                quantity={item.quantity}
-                onItemUpdate={getCart}
+                item={item}
+                onItemUpdate={getCart} // Refresh cart on update
               />
             ))
           )}
