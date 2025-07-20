@@ -5,6 +5,7 @@ import Drawer from '../Drawer';
 import ProductCard from '../ProductCard';
 import QuickView from '../QuickView';
 import Slider from '../Slider';
+import CurrencyFormatter from '../CurrencyFormatter';
 
 const ProductCardGrid = (props) => {
   const [showQuickView, setShowQuickView] = useState(false);
@@ -19,15 +20,17 @@ const ProductCardGrid = (props) => {
       <ProductCard
         key={index}
         height={height}
-        price={`₹${Number(product.price).toLocaleString('en-IN')}`}
+        price={<CurrencyFormatter amount={product.price} />}
         imageAlt={product.name}
         name={product.name}
         image={product.image_url}
         meta={product.description || product.meta}
-        originalPrice={product.original_price
-          ? `₹${Number(product.original_price).toLocaleString('en-IN')}`
-          : null}
-        link={`/product/${product.slug || product.id}`}
+        originalPrice={
+          product.original_price ? (
+            <CurrencyFormatter amount={product.original_price} />
+          ) : null
+        }
+        slug={product.slug || product.id}
         showQuickView={() => setShowQuickView(true)}
       />
     ));
