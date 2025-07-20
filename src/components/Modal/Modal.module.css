@@ -1,6 +1,6 @@
 .root {
   position: fixed;
-  top: 0;
+  top: 0px;
   width: 100vw;
   height: 100vh;
   z-index: 51;
@@ -12,22 +12,18 @@
   background-color: var(--standard-black);
   opacity: 0.7;
   cursor: pointer;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 52;
 }
 
 .hide {
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
+  pointer-events: none; /* ✅ Prevent interaction when hidden */
 }
 
 .show {
   opacity: 1;
   visibility: visible;
-  pointer-events: auto;
+  pointer-events: auto; /* ✅ Ensure interaction when shown */
 }
 
 .contentContainer {
@@ -35,9 +31,11 @@
   overflow: hidden;
   background-color: var(--standard-white);
   z-index: 53;
+
   position: absolute;
   top: 50%;
   left: 50%;
+
   transform: translate(-50%, -70%);
 }
 
