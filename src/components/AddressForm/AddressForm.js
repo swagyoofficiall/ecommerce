@@ -3,11 +3,9 @@ import * as styles from './AddressForm.module.css';
 
 import Button from '../Button';
 import FormInputField from '../FormInputField';
-import { supabase } from '../../lib/supabase'; // ✅ your Supabase client
+import supabase from '../../lib/supabase'; // ✅ correct import
 
-const AddressForm = (props) => {
-  const { closeForm } = props;
-
+const AddressForm = ({ closeForm, onSaved }) => {
   const initialState = {
     name: '',
     address: '',
@@ -32,16 +30,16 @@ const AddressForm = (props) => {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserId(user.id);
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUserId(data.user.id);
       }
     };
     getUser();
   }, []);
 
-  const handleChange = (id, e) => {
-    setForm({ ...form, [id]: e });
+  const handleChange = (id, value) => {
+    setForm((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -53,7 +51,7 @@ const AddressForm = (props) => {
       return;
     }
 
-    const { error } = await supabase.from('user_addresses').insert([
+    const { error } = await supabase.from('addresses').insert([
       {
         user_id: userId,
         name: form.name,
@@ -62,7 +60,7 @@ const AddressForm = (props) => {
         postal: form.postal,
         country: form.country,
         company: form.company,
-      }
+      },
     ]);
 
     if (error) {
@@ -71,70 +69,74 @@ const AddressForm = (props) => {
       return;
     }
 
-    closeForm(); // ✅ Close after saving
+    if (typeof onSaved === 'function') {
+      onSaved(); // 🔁 tell parent to refresh list
+    }
+
+    closeForm(); // ✅ Close the form
   };
 
   return (
     <div className={styles.root}>
       <form className={styles.inputContainer} onSubmit={handleSubmit}>
         <FormInputField
-          id={'name'}
+          id="name"
           value={form.name}
           handleChange={handleChange}
-          type={'input'}
-          labelName={'Name'}
+          type="input"
+          labelName="Name"
           error={errorForm.name}
         />
         <FormInputField
-          id={'company'}
+          id="company"
           value={form.company}
           handleChange={handleChange}
-          type={'input'}
-          labelName={'Company'}
+          type="input"
+          labelName="Company"
           error={errorForm.company}
         />
         <FormInputField
-          id={'address'}
+          id="address"
           value={form.address}
           handleChange={handleChange}
-          type={'input'}
-          labelName={'Street Address'}
+          type="input"
+          labelName="Street Address"
           error={errorForm.address}
         />
         <FormInputField
-          id={'country'}
+          id="country"
           value={form.country}
           handleChange={handleChange}
-          type={'input'}
-          labelName={'Country'}
+          type="input"
+          labelName="Country"
           error={errorForm.country}
         />
         <FormInputField
-          id={'state'}
+          id="state"
           value={form.state}
           handleChange={handleChange}
-          type={'input'}
-          labelName={'State'}
+          type="input"
+          labelName="State"
           error={errorForm.state}
         />
         <FormInputField
-          id={'postal'}
+          id="postal"
           value={form.postal}
           handleChange={handleChange}
-          type={'number'}
-          labelName={'Postal Code'}
+          type="number"
+          labelName="Postal Code"
           error={errorForm.postal}
         />
 
         <div className={styles.actionContainers}>
-          <Button fullWidth type={'submit'} level={'primary'}>
+          <Button fullWidth type="submit" level="primary">
             Save
           </Button>
           <Button
             fullWidth
-            type={'button'}
+            type="button"
             onClick={closeForm}
-            level={'secondary'}
+            level="secondary"
           >
             Cancel
           </Button>
