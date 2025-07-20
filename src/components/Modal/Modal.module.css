@@ -1,45 +1,48 @@
 .root {
-    position: fixed;
-    top: 0px;
-
-    width: 100vw;
-    height: 100vh;
-    z-index: 51;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 51;
 }
 
 .backdrop {
-    width: 100%;
-    height: 100%;
-    background-color: var(--standard-black);
-    opacity: 0.7;
-    cursor: pointer;
+  width: 100%;
+  height: 100%;
+  background-color: var(--standard-black);
+  opacity: 0.7;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 52;
 }
 
 .hide {
-    opacity: 0;
-    visibility: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .show {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .contentContainer {
-    border-radius: 4px;
-    overflow: hidden;
-    background-color: var(--standard-white);
-    z-index: 53;
-
-    position: absolute;
-    top: 50%;
-    left: 50%;
-
-    transform: translate(-50%, -70%);
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: var(--standard-white);
+  z-index: 53;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -70%);
 }
 
 @media (max-width: 550px) {
-    .contentContainer {
-        width: 90vw;
-    }
+  .contentContainer {
+    width: 90vw;
+  }
 }
