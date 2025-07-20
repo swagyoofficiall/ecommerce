@@ -1,24 +1,31 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import * as styles from './Modal.module.css';
 
 const Modal = ({ children, visible, close }) => {
-  useEffect(() => {
-    window.addEventListener('keydown', close);
-    return () => window.removeEventListener('keydown', close);
+  // 🛠️ Fix: useCallback for stable event listener
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Escape') {
+      close();
+    }
   }, [close]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   return (
     <div
       className={`${styles.root} ${
-        visible === true ? styles.show : styles.hide
+        visible ? styles.show : styles.hide
       }`}
     >
       <div className={styles.contentContainer}>{children}</div>
       <div
-        role={'presentation'}
-        onClick={() => close()}
+        role="presentation"
+        onClick={close}
         className={styles.backdrop}
-      ></div>
+      />
     </div>
   );
 };
