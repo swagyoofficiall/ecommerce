@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { navigate } from 'gatsby';
 import * as styles from './address.module.css';
 
@@ -9,36 +9,50 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import Icon from '../../components/Icons/Icon';
 import Layout from '../../components/Layout/Layout';
 import Modal from '../../components/Modal';
-
-import { isAuth } from '../../helpers/general';
 import Button from '../../components/Button';
 
-const AddressPage = (props) => {
-  const address1 = {
-    name: 'John Doe',
-    address: '123 Steam Mill Lane, Haymerket',
-    state: 'NSW',
-    postal: '2000',
-    country: 'Australia',
-    company: '',
-  };
+import { isAuth } from '../../helpers/general';
+import supabase from '../../lib/supabase';
 
-  const address2 = {
-    name: 'John Doe',
-    address: '123 Steam Mill Lane, Haymerket',
-    state: 'NSW',
-    postal: '2000',
-    country: 'Australia',
-    company: 'Matter Design',
-  };
-
-  const [addressList] = useState([address1, address2]);
+const AddressPage = () => {
+  const [addressList, setAddressList] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
+  // Redirect if not authenticated
   if (isAuth() === false) {
     navigate('/login');
   }
+
+  // Fetch addresses from Supabase
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      const userId = localStorage.getItem('user_id');
+      const { data, error } = await supabase
+        .from('addresses')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (!error) setAddressList(data || []);
+    };
+
+    fetchAddresses();
+  }, [showForm]);
+
+  // Delete address from Supabase
+  const handleDelete = async () => {
+    const { error } = await supabase
+      .from('addresses')
+      .delete()
+      .eq('id', deleteId);
+
+    if (!error) {
+      setAddressList(addressList.filter((addr) => addr.id !== deleteId));
+      setShowDelete(false);
+      setDeleteId(null);
+    }
+  };
 
   return (
     <Layout>
@@ -50,34 +64,42 @@ const AddressPage = (props) => {
             { link: '/account/address', label: 'Addresses' },
           ]}
         />
+
         <h1>Addresses</h1>
 
-        {showForm === false && (
+        {!showForm && (
           <div className={styles.addressListContainer}>
-            {addressList.map((address) => {
-              return (
-                <AddressCard
-                  showForm={() => setShowForm(true)}
-                  showDeleteForm={() => setShowDelete(true)}
-                  {...address}
-                />
-              );
-            })}
+            {addressList.map((address) => (
+              <AddressCard
+                key={address.id}
+                {...address}
+                showForm={() => setShowForm(true)}
+                showDeleteForm={() => {
+                  setShowDelete(true);
+                  setDeleteId(address.id);
+                }}
+              />
+            ))}
+
             <div
               className={styles.addCard}
               role={'presentation'}
               onClick={() => setShowForm(true)}
             >
-              <Icon symbol={'plus'}></Icon>
+              <Icon symbol="plus" />
               <span>new address</span>
             </div>
           </div>
         )}
 
-        {showForm === true && (
-          <AddressForm closeForm={() => setShowForm(false)} />
+        {showForm && (
+          <AddressForm
+            closeForm={() => setShowForm(false)}
+            onSaved={() => setShowForm(false)} // Optional callback for refetch
+          />
         )}
       </AccountLayout>
+
       <Modal visible={showDelete} close={() => setShowDelete(false)}>
         <div className={styles.confirmDeleteContainer}>
           <h4>Delete Address?</h4>
@@ -86,10 +108,10 @@ const AddressPage = (props) => {
             action once you press <strong>'Delete'</strong>
           </p>
           <div className={styles.actionContainer}>
-            <Button onClick={() => setShowDelete(false)} level={'primary'}>
+            <Button onClick={handleDelete} level="primary">
               Delete
             </Button>
-            <Button onClick={() => setShowDelete(false)} level={'secondary'}>
+            <Button onClick={() => setShowDelete(false)} level="secondary">
               Cancel
             </Button>
           </div>
