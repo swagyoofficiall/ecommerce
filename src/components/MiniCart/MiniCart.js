@@ -6,22 +6,24 @@ import CurrencyFormatter from '../CurrencyFormatter';
 import MiniCartItem from '../MiniCartItem';
 
 import * as styles from './MiniCart.module.css';
-import { fetchCartItems } from '../../lib/cart'; // step 1
-import { supabase } from '../../lib/supabase';    // used to get current user
+import { fetchCartItems } from '../../lib/cart';
+import { supabase } from '../../lib/supabase';
 
 const MiniCart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const getCart = async () => {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const items = await fetchCartItems(user.id);
+      setCartItems(items);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const getCart = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const items = await fetchCartItems(user.id);
-        setCartItems(items);
-      }
-      setLoading(false);
-    };
     getCart();
   }, []);
 
@@ -45,12 +47,15 @@ const MiniCart = () => {
             cartItems.map((item) => (
               <MiniCartItem
                 key={item.id}
+                id={item.id}
                 image={item.product?.image}
                 alt={item.product?.name}
                 name={item.product?.name}
                 price={item.product?.price}
                 color={item.product?.color}
                 size={item.product?.size}
+                quantity={item.quantity}
+                onItemUpdate={getCart}
               />
             ))
           )}
