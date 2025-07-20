@@ -13,7 +13,7 @@ const QuickView = (props) => {
   const {
     close,
     buttonTitle = 'Add to Bag',
-    product, // 💡 product is passed as a prop
+    product,
   } = props;
 
   const ctxAddItemNotification = useContext(AddItemNotificationContext);
