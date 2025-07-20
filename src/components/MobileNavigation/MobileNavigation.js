@@ -1,15 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, navigate } from 'gatsby';
 
 import Config from '../../config.json';
 import Icon from '../Icons/Icon';
-import { isAuth } from '../../helpers/general';
-
-//TO DO: refactor this to handle multiple nested links to avoid hardcoding 'depth'
-// have to restructure config.json
-// refactor this
-
 import * as styles from './MobileNavigation.module.css';
+
+import { supabase } from '../../lib/supabase';
 
 const MobileNavigation = (props) => {
   const { close } = props;
@@ -17,36 +13,51 @@ const MobileNavigation = (props) => {
   const [subMenu, setSubMenu] = useState();
   const [category, setCategory] = useState();
   const [depth, setDepth] = useState(0);
+  const [user, setUser] = useState(null);
 
-  const handleLogout = () => {
-    window.localStorage.removeItem('key');
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
+      }
+    };
+    getUser();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/');
     close();
   };
+
+  const isLoggedIn = !!user;
 
   return (
     <div className={styles.root}>
       <nav>
         <div className={styles.headerAuth}>
-          {depth === 0 && isAuth() === false && (
+          {depth === 0 && !isLoggedIn && (
             <div className={styles.authLinkContainer}>
               <Link to={'/signup'}>Sign Up</Link>
               <Link to={'/login'}>Login</Link>
             </div>
           )}
 
-          {depth === 0 && isAuth() === true && (
+          {depth === 0 && isLoggedIn && (
             <div
               className={styles.welcomeContainer}
               role={'presentation'}
               onClick={() => setDepth(-1)}
             >
-              <span className={styles.welcomeMessage}>Welcome, John</span>
+              <span className={styles.welcomeMessage}>
+                Welcome, {user.email}
+              </span>
               <Icon symbol={'caret'}></Icon>
             </div>
           )}
 
-          {depth === -1 && isAuth() === true && (
+          {depth === -1 && isLoggedIn && (
             <div
               className={styles.previousLinkContainer}
               onClick={() => setDepth(0)}
@@ -87,7 +98,6 @@ const MobileNavigation = (props) => {
         </div>
 
         <div className={styles.mobileNavContainer}>
-          {/* dynamic portion */}
           {depth === 0 && (
             <div>
               {Config.headerLinks.map((navObject) => {
@@ -96,8 +106,8 @@ const MobileNavigation = (props) => {
                 return (
                   <Link
                     key={navObject.menuLink}
-                    className={`${styles.mobileLink}`}
-                    to={hasSubmenu === true ? '' : navObject.menuLink}
+                    className={styles.mobileLink}
+                    to={hasSubmenu ? '' : navObject.menuLink}
                     onClick={() => {
                       if (hasSubmenu) {
                         setDepth(1);
@@ -106,7 +116,7 @@ const MobileNavigation = (props) => {
                     }}
                   >
                     {navObject.menuLabel}
-                    {hasSubmenu && <Icon symbol={'caret'}></Icon>}
+                    {hasSubmenu && <Icon symbol={'caret'} />}
                   </Link>
                 );
               })}
@@ -120,35 +130,31 @@ const MobileNavigation = (props) => {
           )}
 
           {depth === 1 &&
-            category.category.map((menuItem) => {
-              return (
-                <Link
-                  key={menuItem.categoryLabel}
-                  to={''}
-                  onClick={() => {
-                    setDepth(2);
-                    setSubMenu(menuItem);
-                  }}
-                  className={`${styles.mobileLink}`}
-                >
-                  {menuItem.categoryLabel}
-                  <Icon symbol={'caret'}></Icon>
-                </Link>
-              );
-            })}
+            category.category.map((menuItem) => (
+              <Link
+                key={menuItem.categoryLabel}
+                to={''}
+                onClick={() => {
+                  setDepth(2);
+                  setSubMenu(menuItem);
+                }}
+                className={styles.mobileLink}
+              >
+                {menuItem.categoryLabel}
+                <Icon symbol={'caret'} />
+              </Link>
+            ))}
 
           {depth === 2 &&
-            subMenu.submenu.map((menuItem) => {
-              return (
-                <Link
-                  key={menuItem.menuLabel}
-                  to={menuItem.menuLink}
-                  className={`${styles.edgeLink}`}
-                >
-                  {menuItem.menuLabel}
-                </Link>
-              );
-            })}
+            subMenu.submenu.map((menuItem) => (
+              <Link
+                key={menuItem.menuLabel}
+                to={menuItem.menuLink}
+                className={styles.edgeLink}
+              >
+                {menuItem.menuLabel}
+              </Link>
+            ))}
 
           {depth === -1 && (
             <>
@@ -173,7 +179,7 @@ const MobileNavigation = (props) => {
                   onClick={handleLogout}
                 >
                   <Icon symbol={'logout'} />
-                  <span>Sign out </span>
+                  <span>Sign out</span>
                 </div>
               </div>
             </>
