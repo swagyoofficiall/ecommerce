@@ -8,28 +8,22 @@ import RemoveItem from '../RemoveItem';
 import * as styles from './MiniCartItem.module.css';
 import { toOptimizedImage } from '../../helpers/general';
 
-const MiniCartItem = ({ item }) => {
-  if (!item || !item.product) return null;
-
-  const {
-    id,
-    quantity,
-    product: {
-      id: productId,
-      name,
-      price,
-      image,
-      color,
-      size,
-    } = {},
-  } = item;
-
+const MiniCartItem = ({
+  id,
+  name,
+  price,
+  image,
+  color,
+  size,
+  quantity,
+  onItemUpdate, // ✅ callback to refresh cart
+}) => {
   return (
     <div className={styles.root}>
       <div
         className={styles.imageContainer}
         role={'presentation'}
-        onClick={() => navigate(`/product/${productId}`)}
+        onClick={() => navigate(`/product/${id}`)}
       >
         <img src={toOptimizedImage(image)} alt={name || 'Product'} />
       </div>
@@ -49,12 +43,12 @@ const MiniCartItem = ({ item }) => {
         </div>
 
         <div className={styles.adjustItemContainer}>
-          <AdjustItem itemId={id} quantity={quantity} />
+          <AdjustItem itemId={id} quantity={quantity} onItemUpdate={onItemUpdate} />
         </div>
       </div>
 
       <div className={styles.closeContainer}>
-        <RemoveItem itemId={id} />
+        <RemoveItem itemId={id} onItemUpdate={onItemUpdate} />
       </div>
     </div>
   );
