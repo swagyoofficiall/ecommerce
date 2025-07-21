@@ -9,12 +9,12 @@ const Brand = () => {
       role="presentation"
       onClick={() => navigate('/')}
     >
-      {/* Swagyo Animated Logo with Glow + Shimmer */}
+      {/* Swagyo Logo + Slogan */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 500 100"
+        viewBox="0 0 500 120"
         width="220"
-        height="65"
+        height="80"
         role="img"
         aria-label="Swagyo Logo"
         className={styles.shimmerSvg}
@@ -39,11 +39,12 @@ const Brand = () => {
               width="200%"
               height="100%"
               fill="url(#shimmerGradient)"
-              className={styles.shimmerRect}
+              className={styles.shimmerRectOnce}
             />
           </mask>
         </defs>
 
+        {/* SWAGYO TEXT */}
         <g
           fontFamily="Georgia, serif"
           fontWeight="900"
@@ -64,6 +65,18 @@ const Brand = () => {
             </text>
           ))}
         </g>
+
+        {/* SLOGAN BELOW */}
+        <text
+          x="0"
+          y="110"
+          fontFamily="Georgia, serif"
+          fontSize="18"
+          fill="#aaa"
+          className={styles.slogan}
+        >
+          The King&apos;s Choice
+        </text>
       </svg>
     </div>
   );
