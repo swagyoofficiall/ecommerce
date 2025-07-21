@@ -1,11 +1,9 @@
 // src/helpers/currency.js
-
-export default function formatCurrency(amount) {
-  if (typeof amount !== 'number') return '₹0.00';
-
+export const formatINR = (amount) => {
+  if (!amount && amount !== 0) return '';
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(amount);
-}
+};
