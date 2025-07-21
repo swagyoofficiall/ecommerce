@@ -1,12 +1,74 @@
 .root {
-    display: flex;
-    justify-content: center;
-    cursor: pointer;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
 }
 
 @media (max-width: 800px) {
-    .root svg {
-        width: 90px;
-        height: 16.67px;
-    }
+  .root svg {
+    width: 90px;
+    height: 16.67px;
+  }
+}
+
+/* Letter animation */
+.letter {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeUp 0.3s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Glow Effect */
+.glow text {
+  filter: drop-shadow(0 0 3px #ffd700) drop-shadow(0 0 5px #d4af37);
+}
+
+/* Shimmer SVG mask */
+.shimmerSvg {
+  overflow: visible;
+}
+
+/* Shimmer animation (1 time only) */
+.shimmerRectOnce {
+  animation: shimmerMove 2s ease-out 0.5s 1 both;
+}
+
+@keyframes shimmerMove {
+  0% {
+    x: -100%;
+  }
+  100% {
+    x: 100%;
+  }
+}
+
+/* Animated slogan text */
+.slogan {
+  opacity: 0;
+  animation: fadeInSlogan 1s ease-in 0.8s forwards;
+}
+
+@keyframes fadeInSlogan {
+  to {
+    opacity: 1;
+  }
+}
+
+/* 🌙 Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .glow text {
+    filter: drop-shadow(0 0 5px #ffe066) drop-shadow(0 0 8px #ffcc00);
+  }
+
+  .slogan {
+    fill: #ddd;
+  }
 }
