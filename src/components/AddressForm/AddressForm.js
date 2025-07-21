@@ -3,7 +3,7 @@ import * as styles from './AddressForm.module.css';
 
 import Button from '../Button';
 import FormInputField from '../FormInputField';
-import supabase from '../../lib/supabase'; // ✅ correct import
+import { supabase } from '../../lib/supabase'; // ✅ FIXED
 
 const AddressForm = ({ closeForm, onSaved }) => {
   const initialState = {
@@ -70,10 +70,10 @@ const AddressForm = ({ closeForm, onSaved }) => {
     }
 
     if (typeof onSaved === 'function') {
-      onSaved(); // 🔁 tell parent to refresh list
+      onSaved();
     }
 
-    closeForm(); // ✅ Close the form
+    closeForm();
   };
 
   return (
@@ -132,12 +132,7 @@ const AddressForm = ({ closeForm, onSaved }) => {
           <Button fullWidth type="submit" level="primary">
             Save
           </Button>
-          <Button
-            fullWidth
-            type="button"
-            onClick={closeForm}
-            level="secondary"
-          >
+          <Button fullWidth type="button" onClick={closeForm} level="secondary">
             Cancel
           </Button>
         </div>
