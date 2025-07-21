@@ -60,12 +60,30 @@
     margin-top: 32px;
 }
 
+/* ✅ Required missing class from build logs */
+.content {
+    display: flex;
+    gap: 24px;
+    margin-top: 32px;
+}
+
+/* ✅ Required missing class from build logs */
+.filterContainer {
+    width: 240px;
+}
+
+/* ✅ Required missing class from build logs */
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
 .loadMoreContainer {
     margin-top: 80px;
     width: 160px;
     margin: 96px auto 0px auto;
     text-align: center;
-
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -119,5 +137,14 @@
 
     .breadcrumbContainer > div {
         display: none;
+    }
+
+    /* Ensure filters are responsive */
+    .content {
+        flex-direction: column;
+    }
+
+    .filterContainer {
+        width: 100%;
     }
 }
