@@ -19,143 +19,109 @@ import { navigate } from 'gatsby';
 import AddItemNotificationContext from '../../context/AddItemNotificationProvider';
 import { supabase } from '../../lib/supabase';
 
-const ProductPage = ({ location }) => {
-  const ctxAddItemNotification = useContext(AddItemNotificationContext);
-  const showNotification = ctxAddItemNotification.showNotification;
-
+const ProductPage = () => {
   const [product, setProduct] = useState(null);
   const [qty, setQty] = useState(1);
   const [isWishlist, setIsWishlist] = useState(false);
-  const [activeSwatch, setActiveSwatch] = useState('');
-  const [activeSize, setActiveSize] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-
-  const productId = new URLSearchParams(location.search).get('id'); // e.g. ?id=123
+  const ctxAddItemNotification = useContext(AddItemNotificationContext);
 
   useEffect(() => {
     const fetchProduct = async () => {
       const { data, error } = await supabase
-        .from('products')
+        .from('products') // ✅ Replace with your real table name
         .select('*')
-        .eq('id', productId)
+        .eq('slug', 'sample') // ✅ or use `id` if preferred
         .single();
 
-      if (!error && data) {
+      if (error) {
+        console.error('Error fetching product:', error);
+      } else {
         setProduct(data);
-        setActiveSwatch(data.color_options?.[0] || '');
-        setActiveSize(data.size_options?.[0] || '');
       }
     };
 
-    const fetchSuggestions = async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .limit(4);
+    fetchProduct();
+  }, []);
 
-      if (!error) {
-        setSuggestions(data);
-      }
-    };
-
-    if (productId) {
-      fetchProduct();
-      fetchSuggestions();
-    }
-  }, [productId]);
-
-  if (!product) return <Layout><Container><p>Loading product...</p></Container></Layout>;
+  if (!product) return <p>Loading product...</p>;
 
   return (
     <Layout>
       <div className={styles.root}>
-        <Container size={'large'} spacing={'min'}>
+        <Container size="large" spacing="min">
           <Breadcrumbs
             crumbs={[
               { link: '/', label: 'Home' },
-              { label: product.category || 'Shop', link: '/shop' },
-              { label: product.name },
+              { label: 'Shop', link: '/shop' },
+              { label: product.name }
             ]}
           />
-
           <div className={styles.content}>
             <div className={styles.gallery}>
-              <Gallery images={product.gallery || []} />
+              <Gallery images={[product.image]} />
             </div>
             <div className={styles.details}>
               <h1>{product.name}</h1>
-              <span className={styles.vendor}>by {product.vendor}</span>
+              <span className={styles.vendor}>by {product.brand}</span>
 
               <div className={styles.priceContainer}>
                 <CurrencyFormatter appendZero amount={product.price} />
               </div>
 
-              {product.color_options?.length > 0 && (
-                <SwatchList
-                  swatchList={product.color_options}
-                  activeSwatch={activeSwatch}
-                  setActiveSwatch={setActiveSwatch}
+              <div className={styles.sizeContainer}>
+                <SizeList
+                  sizeList={['S', 'M', 'L']}
+                  activeSize={'M'}
+                  setActiveSize={() => {}}
                 />
-              )}
-
-              {product.size_options?.length > 0 && (
-                <div className={styles.sizeContainer}>
-                  <SizeList
-                    sizeList={product.size_options}
-                    activeSize={activeSize}
-                    setActiveSize={setActiveSize}
-                  />
-                </div>
-              )}
+              </div>
 
               <div className={styles.quantityContainer}>
                 <span>Quantity</span>
-                <AdjustItem quantity={qty} onItemUpdate={(newQty) => setQty(newQty)} />
+                <AdjustItem itemId={product.id} quantity={qty} onItemUpdate={() => {}} />
               </div>
 
               <div className={styles.actionContainer}>
                 <div className={styles.addToButtonContainer}>
-                  <Button onClick={() => showNotification()} fullWidth level={'primary'}>
+                  <Button onClick={() => ctxAddItemNotification.showNotification()} fullWidth level="primary">
                     Add to Bag
                   </Button>
                 </div>
                 <div
                   className={styles.wishlistActionContainer}
-                  role={'presentation'}
+                  role="presentation"
                   onClick={() => setIsWishlist(!isWishlist)}
                 >
-                  <Icon symbol={'heart'} />
+                  <Icon symbol="heart" />
                   <div className={`${styles.heartFillContainer} ${isWishlist ? styles.show : styles.hide}`}>
-                    <Icon symbol={'heartFill'} />
+                    <Icon symbol="heartFill" />
                   </div>
                 </div>
               </div>
 
               <div className={styles.description}>
                 <p>{product.description}</p>
-                <span>Product code: {product.product_code}</span>
+                <span>Product code: {product.id}</span>
               </div>
 
               <div className={styles.informationContainer}>
                 <Accordion type="plus" customStyle={styles} title="composition & care">
-                  <p className={styles.information}>{product.description}</p>
+                  <p className={styles.information}>High quality sustainable materials.</p>
                 </Accordion>
                 <Accordion type="plus" customStyle={styles} title="delivery & returns">
-                  <p className={styles.information}>Free delivery and easy returns within 7 days.</p>
+                  <p className={styles.information}>Free delivery over ₹499</p>
                 </Accordion>
                 <Accordion type="plus" customStyle={styles} title="help">
-                  <p className={styles.information}>Need help? Contact us via support@swagyo.in</p>
+                  <p className={styles.information}>Need help? Contact our support.</p>
                 </Accordion>
               </div>
             </div>
           </div>
 
-          {suggestions.length > 0 && (
-            <div className={styles.suggestionContainer}>
-              <h2>You may also like</h2>
-              <ProductCardGrid spacing showSlider height={400} columns={4} data={suggestions} />
-            </div>
-          )}
+          <div className={styles.suggestionContainer}>
+            <h2>You may also like</h2>
+            <ProductCardGrid spacing showSlider height={400} columns={4} data={[]} />
+          </div>
         </Container>
 
         <div className={styles.attributeContainer}>
@@ -163,7 +129,7 @@ const ProductPage = ({ location }) => {
             image="/cloth.png"
             alt="attribute description"
             title="Sustainability"
-            description="We design our products to look good and to be used on a daily basis. Our aim is to inspire people to live with few timeless objects made to last."
+            description="We design our products to last and use high quality timeless materials."
             ctaText="learn more"
             cta={() => navigate('/blog')}
             bgColor="var(--standard-light-grey)"
