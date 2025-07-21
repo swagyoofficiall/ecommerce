@@ -1,139 +1,72 @@
-import React, { useState } from 'react';
-import { navigate } from 'gatsby';
-
-import CurrencyFormatter from '../CurrencyFormatter';
-import Icon from '../Icons/Icon';
-import * as styles from './OrderItem.module.css';
+import React from 'react';
+import { formatINR } from '../../helpers/currency';
 import { toOptimizedImage } from '../../helpers/general';
 
-const OrderItem = (props) => {
-  const { headerStyling, order } = props;
-  const [collapsed, setCollapsed] = useState(false);
+import * as styles from './OrderItem.module.css';
+import { isAuth } from '../../helpers/general';
 
-  let computedTotal = 0;
-  for (let x = 0; x < order.items.length; x++) {
-    computedTotal += order.items[x].price * order.items[x].quantity;
-  }
+const OrderItem = ({ order, headerStyling }) => {
+  const {
+    id,
+    created_at,
+    updated_at,
+    status,
+    billing_name,
+    shipping_address,
+    total_amount,
+    products = [],
+  } = order;
 
-  const pad = (str, max) => {
-    str = str.toString();
-    return str.length < max ? pad('0' + str, max) : str;
-  };
+  const user = isAuth();
+  const isAdmin = user?.email === 'swagyoofficial@gmail.com';
 
   return (
-    <div className={`${styles.root} ${collapsed ? styles.paddingBottom : ''}`}>
-      <div
-        className={`${headerStyling} ${styles.orderHeader}`}
-        role="presentation"
-        onClick={() => setCollapsed(!collapsed)}
-      >
-        <div className={styles.orderMeta}>
-          <span className={styles.orderId}>Order #{pad(order.id, 5)}</span>
-          <span className={styles.orderTotalMeta}>
-            {`${order.items.length} products totaling `}
-          </span>
-          <span className={styles.total}>
-            <CurrencyFormatter amount={computedTotal} />
-          </span>
-        </div>
-        <div className={styles.od}>
-          <span className={styles.mobileLabel}>Order Date</span>
-          <span className={styles.orderDate}>{order.orderPlaced}</span>
-        </div>
-        <span className={styles.lastUpdate}>{order.lastUpdate}</span>
-        <div className={styles.st}>
-          <span className={styles.mobileLabel}>Status</span>
-          <span className={styles.status}>{order.status}</span>
-        </div>
-        <div
-          className={`${styles.toggleContainer} ${
-            collapsed ? styles.rotate : ''
-          }`}
-        >
-          <Icon symbol="caret" />
-        </div>
+    <div className={styles.orderItemContainer}>
+      <div className={`${styles.orderHeader} ${headerStyling}`}>
+        <span>#{id}</span>
+        <span>{new Date(created_at).toLocaleDateString()}</span>
+        <span>{new Date(updated_at).toLocaleDateString()}</span>
+        <span>{status}</span>
       </div>
 
-      <div
-        className={`${styles.detailsContainer} ${
-          collapsed ? styles.show : styles.hide
-        }`}
-      >
-        <div className={styles.addressDetailContainer}>
-          <div className={styles.addressContainer}>
-            <span className={styles.addressMeta}>Ship to</span>
-            <span className={styles.address}>
-              {order.shippingAddress?.name}
-            </span>
-            <span className={styles.address}>
-              {order.shippingAddress?.address}
-            </span>
-            <span className={styles.address}>
-              {`${order.shippingAddress?.state} ${order.shippingAddress?.postal}`}
-            </span>
-            <span className={styles.address}>
-              {order.shippingAddress?.country}
-            </span>
+      <div className={styles.detailsContainer}>
+        <div className={styles.shippingBilling}>
+          <div>
+            <strong>Billing Name:</strong>
+            <p>{billing_name}</p>
           </div>
-          <div className={styles.addressContainer}>
-            <span className={styles.addressMeta}>Bill to</span>
-            <span className={styles.address}>
-              {order.billingAddress?.name}
-            </span>
-            <span className={styles.address}>
-              {order.billingAddress?.address}
-            </span>
-            <span className={styles.address}>
-              {`${order.billingAddress?.state} ${order.billingAddress?.postal}`}
-            </span>
-            <span className={styles.address}>
-              {order.billingAddress?.country}
-            </span>
+          <div>
+            <strong>Shipping Address:</strong>
+            <p>{shipping_address}</p>
           </div>
         </div>
 
-        <div className={styles.itemList}>
-          {order.items.map((item, index) => (
-            <div className={styles.itemContainer} key={index}>
-              <div
-                role="presentation"
-                onClick={() => navigate(`/product/${item.slug}`)}
-                className={styles.imageContainer}
-              >
-                <img alt={item.alt} src={toOptimizedImage(item.image)} />
-              </div>
+        <div className={styles.productList}>
+          {products.map((product, index) => (
+            <div key={index} className={styles.productItem}>
+              <img
+                src={toOptimizedImage(product.image)}
+                alt={product.name}
+                className={styles.productImage}
+              />
               <div>
-                <span className={styles.itemName}>{item.name}</span>
-                <div className={styles.orderItemMeta}>
-                  <span className={styles.itemQuantity}>Qty: {item.quantity}</span>
-                  <div className={styles.itemTotalMobile}>
-                    <CurrencyFormatter amount={item.quantity * item.price} />
-                  </div>
-                </div>
-              </div>
-              <div className={styles.itemTotal}>
-                <CurrencyFormatter amount={item.quantity * item.price} />
+                <p><strong>{product.name}</strong></p>
+                <p>Qty: {product.quantity}</p>
+                <p>Price: {formatINR(product.price)}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className={styles.transactionDetails}>
-          <div className={styles.transactionalGrid}>
-            <span>Subtotal:</span>
-            <span>
-              <CurrencyFormatter amount={computedTotal} />
-            </span>
-            <span>GST:</span>
-            <span>
-              <CurrencyFormatter amount={0} />
-            </span>
-            <span className={styles.bold}>Grand Total</span>
-            <span className={styles.grandTotal}>
-              <CurrencyFormatter amount={computedTotal} />
-            </span>
-          </div>
+        <div className={styles.totalContainer}>
+          <strong>Total:</strong> {formatINR(total_amount)}
         </div>
+
+        {isAdmin && (
+          <div className={styles.adminControls}>
+            <button>Edit Order</button>
+          </div>
+        )}
       </div>
     </div>
   );
