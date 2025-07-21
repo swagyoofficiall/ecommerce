@@ -5,6 +5,7 @@ import AccountLayout from '../../components/AccountLayout/AccountLayout';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import Layout from '../../components/Layout/Layout';
 import OrderItem from '../../components/OrderItem/OrderItem';
+
 import { isAuth } from '../../helpers/general';
 import { navigate } from 'gatsby';
 import { supabase } from '../../helpers/supabaseClient';
@@ -25,7 +26,7 @@ const OrderPage = () => {
         const { data, error } = await supabase
           .from('orders')
           .select('*')
-          .eq('user_email', user.email) // Match logged-in user's email
+          .eq('user_email', user.email)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
