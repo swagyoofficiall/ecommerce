@@ -1,7 +1,18 @@
+require("dotenv").config({
+  path: `.env`,
+});
+
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Sydney Ecommerce Theme`,
-    siteUrl: `https://jamm.matter.design`,
+    title: `Swagyo Shop`,
+    siteUrl: `https://shop.swagyo.com`,
   },
-  plugins: [],
+  plugins: [
+    {
+      resolve: 'gatsby-plugin-env-variables',
+      options: {
+        allowList: ['GATSBY_SUPABASE_URL', 'GATSBY_SUPABASE_ANON_KEY'],
+      },
+    },
+  ],
 };
