@@ -33,7 +33,7 @@
     font-size: 14px;
 }
 
-.link{
+.link {
     color: var(--standard-white);
     margin-bottom: 12px;
     display: inline-block;
@@ -152,7 +152,7 @@
     flex-direction: column;
 }
 
-.copyrightContainer span{
+.copyrightContainer span {
     color: var(--standard-white);
     display: block;
     margin-top: 32px;
@@ -180,9 +180,16 @@
     color: var(--standard-white);
 }
 
+.currency {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--standard-white);
+    margin-top: 8px;
+}
+
 @media (hover: hover) {
     .socialIconContainer:hover {
-        background-color: var(--standard-dark-grey)
+        background-color: var(--standard-dark-grey);
     }
 }
 
@@ -191,7 +198,7 @@
         display: grid;
         grid-template-columns: 1fr;
     }
-    
+
     .newsLetter {
         margin-top: 24px;
         display: flex;
