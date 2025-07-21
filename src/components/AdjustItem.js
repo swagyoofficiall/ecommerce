@@ -1,4 +1,5 @@
 import React from 'react';
+import { Minus, Plus } from 'lucide-react'; // ✅ Lucide icons
 import { supabase } from '../lib/supabase';
 import * as styles from './AdjustItem.module.css';
 
@@ -21,15 +22,17 @@ const AdjustItem = ({ itemId, quantity, onItemUpdate }) => {
       <button
         className={styles.button}
         onClick={() => updateQuantity(quantity - 1)}
+        aria-label="Decrease quantity"
       >
-        -
+        <Minus size={16} strokeWidth={2} />
       </button>
       <span className={styles.qty}>{quantity}</span>
       <button
         className={styles.button}
         onClick={() => updateQuantity(quantity + 1)}
+        aria-label="Increase quantity"
       >
-        +
+        <Plus size={16} strokeWidth={2} />
       </button>
     </div>
   );
