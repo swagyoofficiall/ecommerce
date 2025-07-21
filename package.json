@@ -2,8 +2,8 @@
   "name": "gatsby-ecommerce-theme",
   "version": "1.0.0",
   "private": true,
-  "description": "An e-commerce theme designed by Matter Design for Netlify.",
-  "author": "Matter Design",
+  "description": "An e-commerce theme designed by King.",
+  "author": "King",
   "keywords": [
     "gatsby"
   ],
@@ -22,8 +22,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
-    "react-slick": "^0.30.2", 
-    "@supabase/supabase-js": "^2.39.5"
+    "react-slick": "^0.30.2",
+    "@supabase/supabase-js": "^2.39.5",
+    "lucide-react": "^0.292.0"                // ✅ Added this
   },
   "devDependencies": {
     "plop": "^3.0.5",
