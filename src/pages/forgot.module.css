@@ -75,3 +75,16 @@
         margin-top: 0px;
     }
 }
+
+/* ✅ Missing styles added below */
+.errorMessage {
+    color: red;
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+.successMessage {
+    color: green;
+    margin-top: 12px;
+    font-size: 14px;
+}
