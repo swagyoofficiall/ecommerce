@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import supabase from '../../lib/supabase';
+import { supabase } from '../../lib/supabase'; // ✅ FIXED
 
 import AccountNav from '../AccountNav';
 import Container from '../Container';
