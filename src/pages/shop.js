@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import * as styles from './shopV2.module.css';
+import * as styles from './shop.module.css';
 
 import Accordion from '../components/Accordion';
 import Banner from '../components/Banner';
