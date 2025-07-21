@@ -1,90 +1,46 @@
 .root {
-    max-width: 750px;
-    margin: 40px auto 140px;
+  max-width: 500px;
+  margin: 80px auto;
+  padding: 24px;
 }
 
-.title {
-    font-weight: normal;
-    font-size: 52px;
-    line-height: 62px;
-    text-align: center;
-    margin-bottom: 40px;
+.heading {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
 }
 
-.message {
-    font-weight: normal;
-    font-size: 16px;
-    line-height: 26px;
+.inputGroup {
+  margin-bottom: 24px;
 }
 
-.formContainer {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 40px;
-    margin-bottom: 30px;
+input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
-.formContainer > div:first-child {
-    min-width: 480px;
-    margin-right: 8px;
-    min-height: 101px;
+.button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: var(--standard-black);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.formContainer input {
-    height: 52px;
-}
-
-/* fieldinput has a possibility of having an error state */
-.buttonContainer {
-    margin-top: 25px; 
-    flex-grow: 1;
-}
-
-@media (max-width: 800px) {
-    .gridContainer {
-        display: none;
-    }
-
-    .root {
-        padding: 0px 16px;
-    }
-
-    .title {
-        font-size: 32px;
-        line-height: 38px;
-    }
-
-    .message {
-        font-size: 14px;
-        line-height: 17px;
-        text-align: center;
-        padding: 0px 24px;
-    }
-
-    .formContainer {
-        flex-direction: column;
-    }
-
-    .formContainer > div:first-child {
-        min-width: unset;
-        min-height: unset;
-        margin-bottom: 16px;
-    }
-
-    .buttonContainer {
-        margin-top: 0px;
-    }
-}
-
-/* ✅ Missing styles added below */
 .errorMessage {
-    color: red;
-    margin-top: 12px;
-    font-size: 14px;
+  color: red;
+  font-size: 14px;
+  margin-top: 8px;
 }
 
 .successMessage {
-    color: green;
-    margin-top: 12px;
-    font-size: 14px;
+  color: green;
+  font-size: 14px;
+  margin-top: 8px;
 }
