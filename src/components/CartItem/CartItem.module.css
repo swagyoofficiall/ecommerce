@@ -133,3 +133,34 @@
         margin-left: -30px;
     }
 }
+
+/* ✅ Added required classes to fix Netlify errors */
+.adjustWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.adjustButton {
+    padding: 2px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid var(--standard-black);
+    background-color: transparent;
+}
+
+.quantity {
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.removeButton {
+    font-size: 14px;
+    color: red;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-top: 8px;
+}
