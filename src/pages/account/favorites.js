@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { navigate } from 'gatsby';
 import * as styles from './favorites.module.css';
 
@@ -14,9 +14,8 @@ import { supabase } from '../../lib/supabase';
 
 const FavoritesPage = () => {
   const [favorites, setFavorites] = useState([]);
-  const [userId, setUserId] = useState(null);
-  const [selectedFavoriteId, setSelectedFavoriteId] = useState(null);
   const [showDelete, setShowDelete] = useState(false);
+  const [selectedFavoriteId, setSelectedFavoriteId] = useState(null);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -25,38 +24,29 @@ const FavoritesPage = () => {
         navigate('/login');
         return;
       }
-      setUserId(user.id);
 
       const { data, error } = await supabase
         .from('user_favorites')
-        .select('*')
+        .select(`
+          id,
+          color,
+          size,
+          product_id,
+          products ( title, image, alt_text )
+        `)
         .eq('user_id', user.id);
 
-      if (error) {
-        console.error('Error fetching favorites:', error.message);
-      } else {
-        setFavorites(data || []);
-      }
+      if (!error) setFavorites(data);
     };
 
     fetchFavorites();
   }, []);
 
-  const handleRemoveFavorite = async () => {
+  const handleRemove = async () => {
     if (!selectedFavoriteId) return;
-
-    const { error } = await supabase
-      .from('user_favorites')
-      .delete()
-      .eq('id', selectedFavoriteId)
-      .eq('user_id', userId);
-
-    if (error) {
-      console.error('Error removing favorite:', error.message);
-    } else {
-      setFavorites(favorites.filter(fav => fav.id !== selectedFavoriteId));
-      setShowDelete(false);
-    }
+    await supabase.from('user_favorites').delete().eq('id', selectedFavoriteId);
+    setFavorites((prev) => prev.filter((fav) => fav.id !== selectedFavoriteId));
+    setShowDelete(false);
   };
 
   return (
@@ -70,26 +60,18 @@ const FavoritesPage = () => {
             ]}
           />
           <h1>Favorites</h1>
-
-          {favorites.length === 0 ? (
-            <p>No favorite items saved.</p>
-          ) : (
-            <div className={styles.favoriteListContainer}>
-              {favorites.map((fav) => (
-                <FavoriteCard
-                  key={fav.id}
-                  color={fav.color}
-                  size={fav.size}
-                  img={fav.img_url}
-                  alt={fav.product_name}
-                  showConfirmDialog={() => {
-                    setSelectedFavoriteId(fav.id);
-                    setShowDelete(true);
-                  }}
-                />
-              ))}
-            </div>
-          )}
+          <div className={styles.favoriteListContainer}>
+            {favorites.map((fav) => (
+              <FavoriteCard
+                key={fav.id}
+                data={fav}
+                showConfirmDialog={() => {
+                  setSelectedFavoriteId(fav.id);
+                  setShowDelete(true);
+                }}
+              />
+            ))}
+          </div>
         </Container>
       </div>
 
@@ -97,16 +79,11 @@ const FavoritesPage = () => {
         <div className={styles.confirmDeleteContainer}>
           <h4>Remove from Favorites?</h4>
           <p>
-            Are you sure you want to remove this from your favorites? You cannot
-            undo this action once you press <strong>'Delete'</strong>.
+            Are you sure you want to remove this from your favorites? You cannot undo this action.
           </p>
           <div className={styles.actionContainer}>
-            <Button onClick={handleRemoveFavorite} level="primary">
-              Delete
-            </Button>
-            <Button onClick={() => setShowDelete(false)} level="secondary">
-              Cancel
-            </Button>
+            <Button onClick={handleRemove} level={'primary'}>Delete</Button>
+            <Button onClick={() => setShowDelete(false)} level={'secondary'}>Cancel</Button>
           </div>
         </div>
       </Modal>
