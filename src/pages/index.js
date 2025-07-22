@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link, navigate } from 'gatsby';
 
 import AttributeGrid from '../components/AttributeGrid';
 import Container from '../components/Container';
@@ -11,17 +12,13 @@ import ProductCardGrid from '../components/ProductCardGrid';
 import Quote from '../components/Quote';
 import Title from '../components/Title';
 
-import { generateMockBlogData } from '../helpers/mock';
-
 import * as styles from './index.module.css';
-import { Link, navigate } from 'gatsby';
 import { toOptimizedImage } from '../helpers/general';
 import { supabase } from '../lib/supabase';
 
 const IndexPage = () => {
   const [newArrivals, setNewArrivals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const blogData = generateMockBlogData(3); // Keeping blog dummy for now
 
   const goToShop = () => {
     navigate('/shop');
@@ -59,7 +56,7 @@ const IndexPage = () => {
 
   return (
     <Layout disablePaddingBottom>
-      {/* Hero Container */}
+      {/* Hero */}
       <Hero
         maxWidth={'500px'}
         image={'/banner1.png'}
@@ -69,7 +66,7 @@ const IndexPage = () => {
         ctaAction={goToShop}
       />
 
-      {/* Message Container */}
+      {/* Message */}
       <div className={styles.messageContainer}>
         <p>
           This is a demonstration of the Sydney theme for verse by{' '}
@@ -81,7 +78,7 @@ const IndexPage = () => {
         </p>
       </div>
 
-      {/* Collection Container */}
+      {/* Collection */}
       <div className={styles.collectionContainer}>
         <Container size={'large'}>
           <Title name={'New Collection'} />
@@ -139,15 +136,15 @@ const IndexPage = () => {
         }
       />
 
-      {/* Blog Grid */}
+      {/* Blog Section (you can replace with Supabase blogs later) */}
       <div className={styles.blogsContainer}>
         <Container size={'large'}>
           <Title name={'Journal'} subtitle={'Notes on life and style'} />
-          <BlogPreviewGrid data={blogData} />
+          <BlogPreviewGrid data={[]} />
         </Container>
       </div>
 
-      {/* Sustainable Promotion */}
+      {/* Sustainability Promo */}
       <div className={styles.sustainableContainer}>
         <Hero
           image={toOptimizedImage('/banner3.png')}
@@ -161,7 +158,7 @@ const IndexPage = () => {
         />
       </div>
 
-      {/* Social Media */}
+      {/* Social Grid */}
       <div className={styles.socialContainer}>
         <Title
           name={'Styled by You'}
