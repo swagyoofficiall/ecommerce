@@ -22,7 +22,10 @@ import AddItemNotificationContext from '../../context/AddItemNotificationProvide
 import { supabase } from '../../lib/supabase';
 
 const ProductPage = () => {
-  const { slug } = useParams();
+  // ✅ SSR-safe usage of useParams
+  const params = typeof window !== 'undefined' ? useParams() : {};
+  const { slug } = params || {};
+
   const [product, setProduct] = useState(null);
   const [qty, setQty] = useState(1);
   const [isWishlist, setIsWishlist] = useState(false);
@@ -31,6 +34,8 @@ const ProductPage = () => {
   const ctxAddItemNotification = useContext(AddItemNotificationContext);
 
   useEffect(() => {
+    if (!slug) return;
+
     const fetchProduct = async () => {
       const { data, error } = await supabase
         .from('products')
