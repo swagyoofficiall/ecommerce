@@ -4,14 +4,15 @@ import React from 'react';
 import * as styles from './ExpandedMenu.module.css';
 import { toOptimizedImage } from '../../helpers/general';
 
-const ExpandedMenu = (props) => {
-  const { menu } = props;
+const ExpandedMenu = ({ menu }) => {
+  if (!Array.isArray(menu) || menu.length === 0) return null;
 
-  if (menu === null || menu === undefined) return <React.Fragment />;
   return (
     <div className={styles.root}>
       <div className={styles.linkContainers}>
-        {menu?.map((item, index) => {
+        {menu.map((item, index) => {
+          if (!item || !item.submenu) return null;
+
           return (
             <div key={index} className={styles.categoryContainer}>
               <span className={styles.categoryName}>{item.categoryLabel}</span>
@@ -30,9 +31,10 @@ const ExpandedMenu = (props) => {
           );
         })}
       </div>
+
       <div className={styles.imageContainer}>
-        <img src={toOptimizedImage('/headerPic1.png')} alt={'header 1'}></img>
-        <img src={toOptimizedImage('/headerPic2.png')} alt={'header 2'}></img>
+        <img src={toOptimizedImage('/headerPic1.png')} alt="header 1" />
+        <img src={toOptimizedImage('/headerPic2.png')} alt="header 2" />
       </div>
     </div>
   );
