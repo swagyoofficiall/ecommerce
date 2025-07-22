@@ -6,18 +6,18 @@ import { navigate } from 'gatsby';
 import { toOptimizedImage } from '../../helpers/general';
 import { CurrencyContext } from '../../context/CurrencyContext';
 
-const CartItem = (props) => {
+const CartItem = (props = {}) => {
   const {
-    id,
-    image,
-    alt,
-    color,
-    name,
-    size,
-    price,
+    id = '',
+    image = '',
+    alt = '',
+    color = '',
+    name = '',
+    size = '',
+    price = 0,
     quantity = 1,
-    onQuantityChange,
-    onRemove,
+    onQuantityChange = () => {},
+    onRemove = () => {},
   } = props;
 
   const [showQuickView, setShowQuickView] = useState(false);
