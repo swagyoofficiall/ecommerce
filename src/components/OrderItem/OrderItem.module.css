@@ -46,7 +46,19 @@
   justify-content: flex-end;
 }
 
-/* ... existing styles you provided ... */
+/* ✅ These fix Netlify errors */
+.orderHeader {
+  cursor: pointer;
+}
+
+.detailsContainer {
+  margin-left: 24px;
+  margin-right: 24px;
+  background-color: var(--standard-white);
+  transition: opacity ease-in-out 0.3s;
+}
+
+/* Existing styles */
 .paddingBottom {
   padding-bottom: 20px;
 }
@@ -57,5 +69,3 @@
   line-height: 21px;
   display: block;
 }
-
-/* (Rest of your styles are already good and kept as-is) */
