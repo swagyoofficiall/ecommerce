@@ -33,7 +33,7 @@
     font-size: 14px;
 }
 
-.link{
+.link {
     color: var(--standard-white);
     margin-bottom: 12px;
     display: inline-block;
@@ -152,7 +152,7 @@
     flex-direction: column;
 }
 
-.copyrightContainer span{
+.copyrightContainer span {
     color: var(--standard-white);
     display: block;
     margin-top: 32px;
@@ -191,7 +191,7 @@
         display: grid;
         grid-template-columns: 1fr;
     }
-    
+
     .newsLetter {
         margin-top: 24px;
         display: flex;
@@ -248,4 +248,11 @@
     .socialIconContainer:first-child {
         margin-right: 0px;
     }
+}
+
+/* ✅ Add missing currency class */
+.currency {
+    font-size: 14px;
+    color: var(--standard-white);
+    font-weight: 500;
 }
