@@ -14,7 +14,7 @@ import {
   isAuth,
 } from '../../helpers/general';
 
-import supabase from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 const SettingsPage = () => {
   const user = isAuth();
