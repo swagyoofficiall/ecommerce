@@ -2,7 +2,9 @@
   command = "gatsby build"
   functions = "netlify/functions"
   publish = "public"
-  environment = { NODE_VERSION = "18" }
+
+[build.environment]
+  NODE_VERSION = "18.20.0"
 
 [[redirects]]
   from = "/*"
