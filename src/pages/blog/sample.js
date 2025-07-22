@@ -7,7 +7,7 @@ import Blog from '../../components/Blog';
 import Container from '../../components/Container';
 import Layout from '../../components/Layout/Layout';
 import { toOptimizedImage } from '../../helpers/general';
-import supabase from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 const SamplePage = () => {
   const location = useLocation();
