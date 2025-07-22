@@ -11,9 +11,7 @@ export async function fetchCartItems(userId) {
       product:product_id (
         name,
         price,
-        image,
-        color,
-        size
+        image
       )
     `)
     .eq('user_id', userId);
