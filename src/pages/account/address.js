@@ -12,7 +12,7 @@ import Modal from '../../components/Modal';
 import Button from '../../components/Button';
 
 import { isAuth } from '../../helpers/general';
-import supabase from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 const AddressPage = () => {
   const [addressList, setAddressList] = useState([]);
