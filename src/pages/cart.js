@@ -18,6 +18,9 @@ const supabase = createClient(
 );
 
 const CartPage = () => {
+  // ✅ Prevent SSR crash during Netlify build
+  if (typeof window === 'undefined') return null;
+
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,12 +43,12 @@ const CartPage = () => {
         // ✅ Fetch cart items joined with product info
         const { data, error } = await supabase
           .from('cart_items')
-          .select(
-            `id, quantity,
-             products (
-               id, name, price, image_url, color, size
-             )`
-          )
+          .select(`
+            id, quantity,
+            products (
+              id, name, price, image_url, color, size
+            )
+          `)
           .eq('user_id', user.id);
 
         if (error) throw error;
@@ -125,4 +128,3 @@ const CartPage = () => {
 };
 
 export default CartPage;
-v
