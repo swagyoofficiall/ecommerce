@@ -2,7 +2,9 @@ import React, { useContext } from 'react';
 import { CurrencyContext } from '../../context/CurrencyContext';
 
 const CurrencySelector = () => {
-  const { currency, changeCurrency } = useContext(CurrencyContext);
+  // Safe fallback for SSR (Static Site Generation)
+  const context = useContext(CurrencyContext) || {};
+  const { currency = 'INR', changeCurrency = () => {} } = context;
 
   const currencies = [
     { label: 'INR ₹', value: 'INR' },
