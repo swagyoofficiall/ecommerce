@@ -8,7 +8,7 @@ import Layout from '../../components/Layout/Layout';
 import ThemeLink from '../../components/ThemeLink';
 
 import { toOptimizedImage } from '../../helpers/general';
-import supabase from '../../lib/supabase'; // ✅ your real Supabase client
+import { supabase } from '../../lib/supabase'; // ✅ your real Supabase client
 import * as styles from './index.module.css';
 
 const BlogPage = () => {
