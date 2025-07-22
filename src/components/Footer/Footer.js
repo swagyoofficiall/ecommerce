@@ -10,7 +10,14 @@ import Button from '../Button';
 import Config from '../../config.json';
 import * as styles from './Footer.module.css';
 
-const Footer = (prop) => {
+// Fallbacks to prevent SSR crash
+const safeFooterLinks = Config.footerLinks || [];
+const safeCurrencyList = Config.currencyList || [];
+const safeLanguageList = Config.languageList || [];
+const safePaymentOptions = Config.paymentOptions || {};
+const safeSocial = Config.social || {};
+
+const Footer = () => {
   const [email, setEmail] = useState('');
 
   const subscribeHandler = (e) => {
@@ -20,21 +27,19 @@ const Footer = (prop) => {
   };
 
   const handleSocialClick = (platform) => {
-    window.open(Config.social[platform]);
+    window.open(safeSocial[platform]);
   };
 
   const renderLinks = (linkCollection) => {
     return (
       <ul className={styles.linkList}>
-        {linkCollection.links.map((link, index) => {
-          return (
-            <li key={index}>
-              <Link className={`${styles.link} fancy`} to={link.link}>
-                {link.text}
-              </Link>
-            </li>
-          );
-        })}
+        {linkCollection.links.map((link, index) => (
+          <li key={index}>
+            <Link className={`${styles.link} fancy`} to={link.link}>
+              {link.text}
+            </Link>
+          </li>
+        ))}
       </ul>
     );
   };
@@ -44,29 +49,25 @@ const Footer = (prop) => {
       <Container size={'large'} spacing={'min'}>
         <div className={styles.content}>
           <div className={styles.contentTop}>
-            {Config.footerLinks.map((linkCollection, indexLink) => {
-              return (
-                <div className={styles.footerLinkContainer} key={indexLink}>
-                  {/* for web version */}
-                  <div className={styles.footerLinks}>
-                    <span className={styles.linkTitle}>
-                      {linkCollection.subTitle}
-                    </span>
-                    {renderLinks(linkCollection)}
-                  </div>
-                  {/* for mobile version */}
-                  <div className={styles.mobileFooterLinks}>
-                    <Accordion
-                      customStyle={styles}
-                      type={'add'}
-                      title={linkCollection.subTitle}
-                    >
-                      {renderLinks(linkCollection)}
-                    </Accordion>
-                  </div>
+            {safeFooterLinks.map((linkCollection, indexLink) => (
+              <div className={styles.footerLinkContainer} key={indexLink}>
+                <div className={styles.footerLinks}>
+                  <span className={styles.linkTitle}>
+                    {linkCollection.subTitle}
+                  </span>
+                  {renderLinks(linkCollection)}
                 </div>
-              );
-            })}
+                <div className={styles.mobileFooterLinks}>
+                  <Accordion
+                    customStyle={styles}
+                    type={'add'}
+                    title={linkCollection.subTitle}
+                  >
+                    {renderLinks(linkCollection)}
+                  </Accordion>
+                </div>
+              </div>
+            ))}
             <div className={styles.newsLetter}>
               <div className={styles.newsLetterContent}>
                 <span className={styles.linkTitle}>Newsletter</span>
@@ -76,7 +77,7 @@ const Footer = (prop) => {
                 </p>
                 <form
                   className={styles.newsLetterForm}
-                  onSubmit={(e) => subscribeHandler(e)}
+                  onSubmit={subscribeHandler}
                 >
                   <FormInputField
                     icon={'arrow'}
@@ -87,43 +88,40 @@ const Footer = (prop) => {
                   />
                 </form>
                 <div className={styles.socialContainer}>
-                  {Config.social.youtube && (
+                  {safeSocial.youtube && (
                     <div
                       onClick={() => handleSocialClick('youtube')}
-                      role={'presentation'}
+                      role="presentation"
                       className={styles.socialIconContainer}
                     >
-                      <Icon symbol={'youtube'}></Icon>
+                      <Icon symbol={'youtube'} />
                     </div>
                   )}
-
-                  {Config.social.instagram && (
+                  {safeSocial.instagram && (
                     <div
                       onClick={() => handleSocialClick('instagram')}
-                      role={'presentation'}
+                      role="presentation"
                       className={styles.socialIconContainer}
                     >
-                      <Icon symbol={'instagram'}></Icon>
+                      <Icon symbol={'instagram'} />
                     </div>
                   )}
-
-                  {Config.social.facebook && (
+                  {safeSocial.facebook && (
                     <div
                       onClick={() => handleSocialClick('facebook')}
-                      role={'presentation'}
+                      role="presentation"
                       className={styles.socialIconContainer}
                     >
-                      <Icon symbol={'facebook'}></Icon>
+                      <Icon symbol={'facebook'} />
                     </div>
                   )}
-
-                  {Config.social.twitter && (
+                  {safeSocial.twitter && (
                     <div
                       onClick={() => handleSocialClick('twitter')}
-                      role={'presentation'}
+                      role="presentation"
                       className={styles.socialIconContainer}
                     >
-                      <Icon symbol={'twitter'}></Icon>
+                      <Icon symbol={'twitter'} />
                     </div>
                   )}
                 </div>
@@ -136,43 +134,40 @@ const Footer = (prop) => {
         <Container size={'large'} spacing={'min'}>
           <div className={styles.contentBottom}>
             <div className={styles.settings}>
-              <Dropdown
-                label={'Country/Region'}
-                optionList={Config.currencyList}
-              />
-              <Dropdown label={'Language'} optionList={Config.languageList} />
+              <Dropdown label="Country/Region" optionList={safeCurrencyList} />
+              <Dropdown label="Language" optionList={safeLanguageList} />
             </div>
             <div className={styles.copyrightContainer}>
               <div className={styles.creditCardContainer}>
-                {Config.paymentOptions.amex && (
+                {safePaymentOptions.amex && (
                   <img
                     className={styles.amexSize}
-                    src={'/amex.png'}
-                    alt={'amex'}
-                  ></img>
+                    src="/amex.png"
+                    alt="amex"
+                  />
                 )}
-                {Config.paymentOptions.mastercard && (
+                {safePaymentOptions.mastercard && (
                   <img
                     className={styles.masterSize}
-                    src={'/master.png'}
-                    alt={'mastercard'}
-                  ></img>
+                    src="/master.png"
+                    alt="mastercard"
+                  />
                 )}
-                {Config.paymentOptions.visa && (
+                {safePaymentOptions.visa && (
                   <img
                     className={styles.visaSize}
-                    src={'/visa.png'}
-                    alt={'visa'}
-                  ></img>
+                    src="/visa.png"
+                    alt="visa"
+                  />
                 )}
               </div>
               <span>
                 {new Date().getFullYear()} (c) . Built by{' '}
-                <Button target={true} href="https://www.swagyo.com/">
+                <Button target href="https://www.swagyo.com/">
                   KING.
                 </Button>{' '}
                 Powered by{' '}
-                <Button target={true} href="https://www.swagyo.com/">
+                <Button target href="https://www.swagyo.com/">
                   SWAGYO.™
                 </Button>
               </span>
