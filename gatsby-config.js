@@ -14,5 +14,7 @@ module.exports = {
         allowList: ['GATSBY_SUPABASE_URL', 'GATSBY_SUPABASE_ANON_KEY'],
       },
     },
+    // ✅ This removes old service workers from user browsers
+    'gatsby-plugin-remove-serviceworker',
   ],
 };
