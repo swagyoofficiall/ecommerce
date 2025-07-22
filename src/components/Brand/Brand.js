@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { navigate } from 'gatsby';
 import * as styles from './Brand.module.css';
 
+import { SiteContext } from '../../context/siteContext'; // ⬅️ Only if you’re using currency or context logic (optional)
+
 const Brand = () => {
+  // OPTIONAL: if you use currency/language from context (prevent Netlify SSR crash)
+  let currency = 'INR'; // default fallback
+  try {
+    const context = useContext(SiteContext);
+    if (context && context.currency) {
+      currency = context.currency;
+    }
+  } catch (e) {
+    // Safe fallback for SSR
+  }
+
   return (
     <div
       className={styles.root}
@@ -25,7 +38,6 @@ const Brand = () => {
             <stop offset="100%" stopColor="#FFD700" />
           </linearGradient>
 
-          {/* Animated shimmer mask */}
           <linearGradient id="shimmerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="white" stopOpacity="0" />
             <stop offset="50%" stopColor="white" stopOpacity="0.8" />
@@ -44,7 +56,6 @@ const Brand = () => {
           </mask>
         </defs>
 
-        {/* SWAGYO TEXT */}
         <g
           fontFamily="Georgia, serif"
           fontWeight="900"
@@ -66,7 +77,6 @@ const Brand = () => {
           ))}
         </g>
 
-        {/* SLOGAN BELOW */}
         <text
           x="0"
           y="110"
